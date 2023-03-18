@@ -13,5 +13,4 @@ on different planet landing challenges will be possible as players progress.</p>
 
 <p>The game's objective is to build a planet base. Each starship bears a part of a base. 
 Gamers must deliver this important freight at the surface of a planet by successfully landing a spaceship 
-on a specified location on the planet's surface while avoiding obstacles such as craters and boulders to progress 
-to higher levels of difficulty with more obstacles and challenging terrain.</p>
+on a specified location on the planet's surface while avoiding obstacles such as craters and boulders to progress to higher levels of difficulty with more obstacles and challenging terrain.</p>
