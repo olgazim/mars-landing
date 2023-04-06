@@ -4,10 +4,11 @@ import com.example.marslanding.model.SpaceShip;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class GameViewManager {
@@ -22,6 +23,7 @@ public class GameViewManager {
     private static final double MAX_FORCE = 2.5;
     private static final double ACCELERATION = 0.05;
     private static final double MAX_THRUST = 2;
+    private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -79,7 +81,18 @@ public class GameViewManager {
             }
         });
     }
-//    TODO: will need to pass here the tyype of our ship and based on that choose picture
+
+    public void createSpaceBackground() {
+            // get image file
+            Image background = new Image(SPACE_BACKGROUND_IMAGE, 1024, 648, false, true);
+            // create background image
+            BackgroundImage backgroundImage = new BackgroundImage(background, BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.DEFAULT, null);
+            actionPane.setBackground(new Background(backgroundImage));
+    }
+
+//    TODO: will need to pass here the type of our ship and based on that choose picture
     public void createSpaceShip() {
         spaceShipImage = new ImageView("small_space_ship.png");
         spaceShipImage.setFitHeight(SMALL_SPACE_SHIP_SIZE);
@@ -92,6 +105,7 @@ public class GameViewManager {
     public void createNewGame(final Stage menuStage) {
         this.menuStage = menuStage;
         this.menuStage.hide();
+        createSpaceBackground();
         createSpaceShip();
         createGameLoop();
         actionStage.show();
