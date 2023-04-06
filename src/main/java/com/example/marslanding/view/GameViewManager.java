@@ -1,5 +1,6 @@
 package com.example.marslanding.view;
 
+import com.example.marslanding.model.SmallInfoLabel;
 import com.example.marslanding.model.SpaceShip;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -46,9 +47,7 @@ public class GameViewManager {
     private int score;
     private AnimationTimer timer;
 
-    private final static String LANDING_AREA = "landing_area.png";
     private ImageView explosionImage;
-    private final static String EXPLOSION = "crash.png";
     private ImageView landingArea;
 
     public GameViewManager() {
