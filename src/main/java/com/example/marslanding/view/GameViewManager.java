@@ -1,19 +1,32 @@
 package com.example.marslanding.view;
 
+import com.example.marslanding.model.MenuButton;
 import com.example.marslanding.model.SpaceShip;
 import javafx.animation.AnimationTimer;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.List;
+
 public class GameViewManager {
+    private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
     private static final int WIDTH = 1024;
     private static final int HEIGHT = 648;
     private static final int SPACE_SHIP_STARTING_X = WIDTH / 2;
@@ -25,9 +38,15 @@ public class GameViewManager {
     private static final double MAX_FORCE = 2.5;
     private static final double ACCELERATION = 0.05;
     private static final double MAX_THRUST = 2;
+    private double LANDING_ZONE_SCALE = 1;
+    private double LANDING_ZONE_SCALE_MIN = 0.2;
+    private double LANDING_ZONE_SCALE_STEP = 0.1;
     private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
     private static final String LANDING_AREA = "landing_area.png";
     private final static String EXPLOSION = "crash.png";
+    private final static String SUCCESS_MSG = "Congratulations! You have completed the challenge. "
+            + "Would you like to continue playing?";
+    private final static String CRASH_MSG = "Oops! Your ship crashed. Would you like to try again?";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -42,7 +61,8 @@ public class GameViewManager {
     private boolean rightKeyFlag;
     private int angle;
     private AnimationTimer timer;
-
+    private List<MenuButton> dialogButtonsList;
+    private Dialog<MenuButton> dialog;
     private ImageView explosionImage;
     private ImageView landingArea;
 
@@ -67,7 +87,7 @@ public class GameViewManager {
                     leftKeyFlag = true;
                 } else if (keyboardKey == KeyCode.RIGHT) {
                     rightKeyFlag = true;
-                } else {
+                } else if (keyboardKey == KeyCode.UP) {
                     thrust = true;
                 }
             }
@@ -125,8 +145,18 @@ public class GameViewManager {
     }
 
 
+    private double getRandomNumber(int min, int max) {
+        return (double) ((Math.random() * (max - min)) + min);
+    }
     private void setLandingAreaPosition(ImageView image) {
-        image.setX(500);
+        if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
+            LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
+        }
+
+        image.setScaleX(LANDING_ZONE_SCALE);
+        int imageWidth = (int) image.getImage().getWidth();
+
+        image.setX(getRandomNumber(0, WIDTH - imageWidth));
         image.setY(540);
     }
 
@@ -189,8 +219,8 @@ public class GameViewManager {
     }
 
     private void moveShipTo(final double x, final double y) {
-        final double vesselYPosition = spaceShipImage.getLayoutY();
-        final double vesselHeight = spaceShipImage.getBoundsInLocal().getHeight();
+//        final double vesselYPosition = spaceShipImage.getLayoutY();
+//        final double vesselHeight = spaceShipImage.getBoundsInLocal().getHeight();
         final double centerX = spaceShipImage.getBoundsInLocal().getWidth() / 2;
         final double centerY = spaceShipImage.getBoundsInLocal().getHeight() / 2;
 
@@ -213,14 +243,80 @@ public class GameViewManager {
             explosionImage.setLayoutX(SPACE_SHIP_STARTING_X/2.0);
             explosionImage.setLayoutY(SPACE_SHIP_STARTING_Y);
             actionPane.getChildren().remove(spaceShipImage);
+            actionPane.getChildren().remove(landingArea);
             actionPane.getChildren().add(explosionImage);
             timer.stop();
+            showPopup(CRASH_MSG);
         }
 
         // When landing successfully
         if (landingArea.getBoundsInParent().intersects(shipBounds)) {
             timer.stop();
+            showPopup(SUCCESS_MSG);
         }
+    }
+
+    private void goToMenu() {
+        actionStage.close();
+        menuStage.show();
+    }
+
+    private void resetGame() {
+        actionPane.getChildren().remove(landingArea);
+        actionPane.getChildren().remove(spaceShipImage);
+        actionPane.getChildren().remove(explosionImage);
+        createNewGame(menuStage);
+    }
+
+
+    private void showPopup(String message) {
+        Popup popup = new Popup();
+
+        AnchorPane anchorPane = new AnchorPane();
+        anchorPane.setStyle("-fx-background-color: #E2F3EC;");
+        anchorPane.setPrefSize(200, 100);
+
+        Label label = new Label(message);
+        label.setFont(Font.font("Verdana", 12));
+        label.setLayoutY(0);
+        label.setLayoutX(85);
+
+        ButtonBar buttonBar = new ButtonBar();
+        MenuButton retryButton = createReplayButton(buttonBar, popup);
+        MenuButton menuButton = createExitButton(buttonBar, popup);
+        buttonBar.getButtons().addAll(menuButton, retryButton);
+        buttonBar.setLayoutX(10);
+        buttonBar.setLayoutY(45);
+        anchorPane.getChildren().add(label);
+        anchorPane.getChildren().add(buttonBar);
+        popup.getContent().add(anchorPane);
+        popup.show(actionStage);
+    }
+
+    public MenuButton createExitButton(ButtonBar buttonBar, Popup popup) {
+        MenuButton exitBtn = new MenuButton("Exit");
+        buttonBar.setButtonData(exitBtn, ButtonBar.ButtonData.FINISH);
+        exitBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                popup.hide();
+                goToMenu();
+            }
+        });
+        return exitBtn;
+    }
+
+    public MenuButton createReplayButton(ButtonBar buttonBar, Popup popup) {
+        MenuButton replayBtn = new MenuButton("Replay");
+        buttonBar.setButtonData(replayBtn, ButtonBar.ButtonData.FINISH);
+        replayBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                popup.hide();
+                resetGame();
+            }
+        });
+        return replayBtn;
     }
 
 }
