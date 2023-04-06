@@ -3,6 +3,8 @@ package com.example.marslanding.view;
 import com.example.marslanding.model.SpaceShip;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,7 +25,7 @@ public class GameViewManager {
     private static final double MAX_FORCE = 2.5;
     private static final double ACCELERATION = 0.05;
     private static final double MAX_THRUST = 2;
-    private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
+    private static final String SPACE_BACKGROUND_IMAGE = "game-background.png";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -33,17 +35,19 @@ public class GameViewManager {
     private ImageView spaceShipImage;
 
     private SpaceShip spaceShip;
-    private  boolean thrust;
-    private  boolean leftKeyFlag;
-    private  boolean rightKeyFlag;
+    private boolean thrust;
+    private boolean leftKeyFlag;
+    private boolean rightKeyFlag;
     private int angle;
     private AnimationTimer timer;
+
+    private final static String LANDING_AREA = "landing-area.png";
+    private ImageView landingArea;
 
     public GameViewManager() {
         createActionStage();
         createKeyListeners();
     }
-
 
     private void createActionStage() {
         actionPane = new AnchorPane();
@@ -57,7 +61,7 @@ public class GameViewManager {
             @Override
             public void handle(final KeyEvent keyEvent) {
                 KeyCode keyboardKey = keyEvent.getCode();
-                if(keyboardKey == KeyCode.LEFT) {
+                if (keyboardKey == KeyCode.LEFT) {
                     leftKeyFlag = true;
                 } else if (keyboardKey == KeyCode.RIGHT) {
                     rightKeyFlag = true;
@@ -71,7 +75,7 @@ public class GameViewManager {
             @Override
             public void handle(final KeyEvent keyEvent) {
                 KeyCode keyboardKey = keyEvent.getCode();
-                if(keyboardKey == KeyCode.LEFT) {
+                if (keyboardKey == KeyCode.LEFT) {
                     leftKeyFlag = false;
                 } else if (keyboardKey == KeyCode.RIGHT) {
                     rightKeyFlag = false;
@@ -83,16 +87,16 @@ public class GameViewManager {
     }
 
     public void createSpaceBackground() {
-            // get image file
-            Image background = new Image(SPACE_BACKGROUND_IMAGE, 1024, 648, false, true);
-            // create background image
-            BackgroundImage backgroundImage = new BackgroundImage(background, BackgroundRepeat.NO_REPEAT,
-                    BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.DEFAULT, null);
-            actionPane.setBackground(new Background(backgroundImage));
+        // get image file
+        Image background = new Image(SPACE_BACKGROUND_IMAGE, 1024, 648, false, true);
+        // create background image
+        BackgroundImage backgroundImage = new BackgroundImage(background, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT, null);
+        actionPane.setBackground(new Background(backgroundImage));
     }
 
-//    TODO: will need to pass here the type of our ship and based on that choose picture
+    //    TODO: will need to pass here the type of our ship and based on that choose picture
     public void createSpaceShip() {
         spaceShipImage = new ImageView("small_space_ship.png");
         spaceShipImage.setFitHeight(SMALL_SPACE_SHIP_SIZE);
@@ -106,9 +110,22 @@ public class GameViewManager {
         this.menuStage = menuStage;
         this.menuStage.hide();
         createSpaceBackground();
+        createGameElements();
         createSpaceShip();
         createGameLoop();
         actionStage.show();
+    }
+
+    private void createGameElements() {
+        landingArea = new ImageView(LANDING_AREA);
+        setLandingAreaPosition(landingArea);
+        actionPane.getChildren().add(landingArea);
+    }
+
+
+    private void setLandingAreaPosition(ImageView image) {
+        image.setX(500);
+        image.setY(540);
     }
 
     private void createGameLoop() {
@@ -144,11 +161,11 @@ public class GameViewManager {
         }
 
         if (leftKeyFlag) {
-            deltaX += 1;
+            deltaX -= 1;
         }
 
         if (rightKeyFlag) {
-            deltaX -= 1;
+            deltaX += 1;
         }
 
         deltaY += force;
@@ -174,6 +191,13 @@ public class GameViewManager {
         final double vesselHeight = spaceShipImage.getBoundsInLocal().getHeight();
         final double centerX = spaceShipImage.getBoundsInLocal().getWidth() / 2;
         final double centerY = spaceShipImage.getBoundsInLocal().getHeight() / 2;
+
+        final double shipBoundsWidth = spaceShipImage.getBoundsInLocal().getWidth() - 50;
+        final double shipBoundsHeight = spaceShipImage.getBoundsInLocal().getHeight() - 23;
+        final double shipBoundsX = x - centerX - 25;
+        final double shipBoundsY = y - centerY - 25;
+        final Bounds shipBounds = new BoundingBox(shipBoundsX, shipBoundsY, shipBoundsWidth, shipBoundsHeight);
+
         final boolean isXValid = x - centerX >= 0 && x + centerX <= WIDTH;
         final boolean isYValid = y - centerY >= 0 && y + centerY <= HEIGHT;
 
@@ -181,6 +205,10 @@ public class GameViewManager {
             spaceShipImage.relocate(x - centerX, y - centerY);
         }
 
+        if (landingArea.getBoundsInParent().intersects(shipBounds)) {
+            timer.stop();
+        }
     }
 
 }
+
