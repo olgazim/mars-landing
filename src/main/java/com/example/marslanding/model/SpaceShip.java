@@ -1,3 +1,7 @@
+package com.example.marslanding.model;
+
+import com.example.marslanding.ShipType;
+
 /**
  * Represents a spaceship.
  *
@@ -37,8 +41,8 @@ public class SpaceShip {
     private int width;
 
     /**
-     * Constructs a SpaceShip object based on specified type.
-     * @param type the type of the spaceship, of type ShipType
+     * Constructs a com.example.marslanding.model.SpaceShip object based on specified type.
+     * @param type the type of the spaceship, of type com.example.marslanding.ShipType
      */
     public SpaceShip(final ShipType type) {
         switch (type) {

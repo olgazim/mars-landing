@@ -1,3 +1,5 @@
+package com.example.marslanding;
+
 /**
  * Represents a planet.
  *
@@ -17,7 +19,7 @@ public class Planet {
     private final double[] startCoordinates;
 
     /**
-     * Constructs a new object of a Planet.
+     * Constructs a new object of a com.example.marslanding.Planet.
      * @param name a name of the planet of type String
      * @param gravitation the gravitation of the planet as double
      * @param surfaceCoordinates the surface coordinates of the planet as 2D array of doubles
