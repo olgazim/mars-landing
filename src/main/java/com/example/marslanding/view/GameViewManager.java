@@ -27,6 +27,7 @@ public class GameViewManager {
     private static final double MAX_THRUST = 2;
     private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
     private static final String LANDING_AREA = "landing_area.png";
+    private final static String EXPLOSION = "crash.png";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -42,9 +43,7 @@ public class GameViewManager {
     private int angle;
     private AnimationTimer timer;
 
-    private final static String LANDING_AREA = "landing_area.png";
     private ImageView explosionImage;
-    private final static String EXPLOSION = "crash.png";
     private ImageView landingArea;
 
     public GameViewManager() {
