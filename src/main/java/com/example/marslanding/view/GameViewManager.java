@@ -1,6 +1,7 @@
 package com.example.marslanding.view;
 
 import com.example.marslanding.model.MenuButton;
+import com.example.marslanding.model.SmallInfoLabel;
 import com.example.marslanding.model.SpaceShip;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
@@ -41,6 +42,7 @@ public class GameViewManager {
     private double LANDING_ZONE_SCALE = 1;
     private double LANDING_ZONE_SCALE_MIN = 0.2;
     private double LANDING_ZONE_SCALE_STEP = 0.1;
+     private static final String STAR = "star.png";
     private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
     private static final String LANDING_AREA = "landing_area.png";
     private final static String EXPLOSION = "crash.png";
@@ -54,15 +56,16 @@ public class GameViewManager {
     private Stage actionStage;
     private Stage menuStage;
     private ImageView spaceShipImage;
-
+    private ImageView star;
+    private SmallInfoLabel pointsLabel;
     private SpaceShip spaceShip;
     private boolean thrust;
     private boolean leftKeyFlag;
     private boolean rightKeyFlag;
     private int angle;
+    private int score;
     private AnimationTimer timer;
-    private List<MenuButton> dialogButtonsList;
-    private Dialog<MenuButton> dialog;
+
     private ImageView explosionImage;
     private ImageView landingArea;
 
@@ -139,6 +142,18 @@ public class GameViewManager {
     }
 
     private void createGameElements() {
+        score = 0;
+        star = new ImageView(STAR);
+        star.setFitHeight(40);
+        star.setFitWidth(40);
+        star.setLayoutX(800);
+        star.setLayoutY(20);
+        actionPane.getChildren().add(star);
+        pointsLabel = new SmallInfoLabel("SCORE : 0");
+        pointsLabel.setLayoutX(850);
+        pointsLabel.setLayoutY(20);
+        actionPane.getChildren().add(pointsLabel);
+
         landingArea = new ImageView(LANDING_AREA);
         setLandingAreaPosition(landingArea);
         actionPane.getChildren().add(landingArea);
@@ -219,8 +234,8 @@ public class GameViewManager {
     }
 
     private void moveShipTo(final double x, final double y) {
-//        final double vesselYPosition = spaceShipImage.getLayoutY();
-//        final double vesselHeight = spaceShipImage.getBoundsInLocal().getHeight();
+        final double vesselYPosition = spaceShipImage.getLayoutY();
+        final double vesselHeight = spaceShipImage.getBoundsInLocal().getHeight();
         final double centerX = spaceShipImage.getBoundsInLocal().getWidth() / 2;
         final double centerY = spaceShipImage.getBoundsInLocal().getHeight() / 2;
 
@@ -246,12 +261,18 @@ public class GameViewManager {
             actionPane.getChildren().remove(landingArea);
             actionPane.getChildren().add(explosionImage);
             timer.stop();
+            score = 0;
+            String textToSet = "SCORE : ";
+            pointsLabel.setText(textToSet + score);
             showPopup(CRASH_MSG);
         }
 
         // When landing successfully
         if (landingArea.getBoundsInParent().intersects(shipBounds)) {
             timer.stop();
+            score += 10;
+            String textToSet = "SCORE : ";
+            pointsLabel.setText(textToSet + score);
             showPopup(SUCCESS_MSG);
         }
     }
