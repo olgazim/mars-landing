@@ -13,8 +13,8 @@ import java.io.FileNotFoundException;
 
 public class MenuButton extends Button {
     private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
-    private final String BUTTON_PRESSED_STYLE = "-fx-background-color: #564962;";
-    private final String BUTTON_STYLE = "-fx-background-color: #6C5B7B; -fx-text-fill: #ff7400";
+    private final String BUTTON_PRESSED_STYLE = "-fx-background-color: #B7DEF1;";
+    private final String BUTTON_STYLE = "-fx-background-color: #E2F3EC; -fx-text-fill: #102F53";
 
     public MenuButton (String label) {
         setText(label);
@@ -68,13 +68,13 @@ public class MenuButton extends Button {
         setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setEffect(new DropShadow(10, Color.rgb(99, 57, 226)));
+                setStyle(BUTTON_PRESSED_STYLE);
             }
         });
         setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                setEffect(null);
+                setStyle(BUTTON_STYLE);
             }
         });
     }

@@ -18,7 +18,7 @@ public class MarsLanderSubScene extends SubScene {
     public MarsLanderSubScene() {
         super(new AnchorPane(), WIDTH, HEIGHT);
         AnchorPane rootPane = (AnchorPane) this.getRoot();
-        BackgroundFill bgFill = new BackgroundFill(Color.web("#6C5B7B"), CornerRadii.EMPTY, Insets.EMPTY);
+        BackgroundFill bgFill = new BackgroundFill(Color.web("#B7DEF1"), CornerRadii.EMPTY, Insets.EMPTY);
         rootPane.setBackground(new Background(bgFill));
         setLayoutX(1024);
         setLayoutY(180);
