@@ -1,5 +1,6 @@
 package com.example.marslanding.view;
 
+import com.example.marslanding.model.SmallInfoLabel;
 import com.example.marslanding.model.SpaceShip;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -26,6 +27,8 @@ public class GameViewManager {
     private static final double ACCELERATION = 0.05;
     private static final double MAX_THRUST = 2;
     private static final String SPACE_BACKGROUND_IMAGE = "game_background.png";
+
+    private static final String STAR = "star.png";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -33,12 +36,14 @@ public class GameViewManager {
     private Stage actionStage;
     private Stage menuStage;
     private ImageView spaceShipImage;
-
+    private ImageView star;
+    private SmallInfoLabel pointsLabel;
     private SpaceShip spaceShip;
     private boolean thrust;
     private boolean leftKeyFlag;
     private boolean rightKeyFlag;
     private int angle;
+    private int score;
     private AnimationTimer timer;
 
     private final static String LANDING_AREA = "landing_area.png";
@@ -119,6 +124,18 @@ public class GameViewManager {
     }
 
     private void createGameElements() {
+        score = 0;
+        star = new ImageView(STAR);
+        star.setFitHeight(40);
+        star.setFitWidth(40);
+        star.setLayoutX(800);
+        star.setLayoutY(20);
+        actionPane.getChildren().add(star);
+        pointsLabel = new SmallInfoLabel("SCORE : 0");
+        pointsLabel.setLayoutX(850);
+        pointsLabel.setLayoutY(20);
+        actionPane.getChildren().add(pointsLabel);
+
         landingArea = new ImageView(LANDING_AREA);
         setLandingAreaPosition(landingArea);
         actionPane.getChildren().add(landingArea);
@@ -215,11 +232,17 @@ public class GameViewManager {
             actionPane.getChildren().remove(spaceShipImage);
             actionPane.getChildren().add(explosionImage);
             timer.stop();
+            score = 0;
+            String textToSet = "SCORE : ";
+            pointsLabel.setText(textToSet + score);
         }
 
         // When landing successfully
         if (landingArea.getBoundsInParent().intersects(shipBounds)) {
             timer.stop();
+            score += 10;
+            String textToSet = "SCORE : ";
+            pointsLabel.setText(textToSet + score);
         }
     }
 
