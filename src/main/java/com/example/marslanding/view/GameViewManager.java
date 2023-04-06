@@ -26,6 +26,7 @@ public class GameViewManager {
     private static final double ACCELERATION = 0.05;
     private static final double MAX_THRUST = 2;
     private static final String SPACE_BACKGROUND_IMAGE = "game-background.png";
+    private static final String LANDING_AREA = "landing-area.png";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -41,7 +42,7 @@ public class GameViewManager {
     private int angle;
     private AnimationTimer timer;
 
-    private final static String LANDING_AREA = "landing-area.png";
+
     private ImageView landingArea;
 
     public GameViewManager() {
@@ -88,7 +89,7 @@ public class GameViewManager {
 
     public void createSpaceBackground() {
         // get image file
-        Image background = new Image(SPACE_BACKGROUND_IMAGE, 1024, 648, false, true);
+        Image background = new Image(SPACE_BACKGROUND_IMAGE, WIDTH, HEIGHT, false, true);
         // create background image
         BackgroundImage backgroundImage = new BackgroundImage(background, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
