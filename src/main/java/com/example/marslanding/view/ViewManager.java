@@ -2,6 +2,7 @@ package com.example.marslanding.view;
 
 import com.example.marslanding.model.MarsLanderSubScene;
 import com.example.marslanding.model.MenuButton;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,18 +14,28 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewManager {
     private static final int WIDTH = 1024;
     private static final int HEIGHT = 648;
-    private static final double MENU_BUTTON_START_X = 100;
-    private static final double MENU_BUTTON_START_Y = 200;
+    private static final int MENU_BUTTON_START_X = 100;
+    private static final int MENU_BUTTON_START_Y = 200;
+    private static final int LOGO_HEIGHT = 120;
+    private static final int LOGO_WIDTH = 100;
+    private static final int LOGO_X_POSITION = 900;
+    private static final int LOGO_Y_POSITION = 230;
+
     private AnchorPane anchorPane;
     private Scene scene;
     private Stage stage;
     private List<MenuButton> menuButtonList;
+    private MarsLanderSubScene scoreSubScene;
+    private boolean isScoresPresented;
+    private MarsLanderSubScene subSceneToHide;
 
     public ViewManager() {
         anchorPane = new AnchorPane();
@@ -35,10 +46,7 @@ public class ViewManager {
         createLogo();
         createMenuButtons();
         createBackground();
-        MarsLanderSubScene subScene = new MarsLanderSubScene();
-        subScene.setLayoutX(450);
-        subScene.setLayoutY(180);
-        anchorPane.getChildren().add(subScene);
+        createScoreSubScenes();
     }
 
     public Stage getStage() {
@@ -47,19 +55,19 @@ public class ViewManager {
 
     private void createLogo() {
         ImageView astronaut = new ImageView("astronaut.png");
-        astronaut.setFitHeight(120);
-        astronaut.setFitWidth(100);
-        astronaut.setLayoutX(900);
-        astronaut.setLayoutY(230);
+        astronaut.setFitHeight(LOGO_HEIGHT);
+        astronaut.setFitWidth(LOGO_WIDTH);
+        astronaut.setLayoutX(LOGO_X_POSITION);
+        astronaut.setLayoutY(LOGO_Y_POSITION);
         astronaut.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent e) {
+            public void handle(final MouseEvent event) {
                 astronaut.setEffect(new DropShadow(10, Color.rgb(99, 57, 226)));
             }
         });
         astronaut.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent e) {
+            public void handle(final MouseEvent event) {
                 astronaut.setEffect(null);
             }
         });
@@ -69,15 +77,42 @@ public class ViewManager {
     private void createPlayButton() {
         MenuButton playBtn = new MenuButton("Play");
         addMenuButtons(playBtn);
+
+        playBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+//                displaySubScene();
+            }
+        });
     }
 
     private void createExitButton() {
         MenuButton exitBtn = new MenuButton("Exit");
         addMenuButtons(exitBtn);
+        exitBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                stage.close();
+            }
+        });
     }
     private void createScoreButton() {
         MenuButton scoreBtn = new MenuButton("Score");
         addMenuButtons(scoreBtn);
+        scoreBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                displaySubScene(scoreSubScene);
+            }
+        });
+    }
+
+    private void displaySubScene(final MarsLanderSubScene subScene) {
+        if(subSceneToHide != null) {
+            subSceneToHide.moveSubScene();
+        }
+        subScene.moveSubScene();
+        subSceneToHide = subScene;
     }
 
     private void createMenuButtons() {
@@ -86,7 +121,7 @@ public class ViewManager {
         createExitButton();
     }
 
-    private void addMenuButtons(MenuButton button) {
+    private void addMenuButtons(final MenuButton button) {
         button.setLayoutX(MENU_BUTTON_START_X);
         button.setLayoutY(MENU_BUTTON_START_Y + menuButtonList.size() * 100);
         menuButtonList.add(button);
@@ -103,6 +138,11 @@ public class ViewManager {
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT, null);
         anchorPane.setBackground(new Background(backgroundImage));
+    }
+
+    private void createScoreSubScenes() {
+        scoreSubScene = new MarsLanderSubScene();
+        anchorPane.getChildren().add(scoreSubScene);
     }
 
 }
