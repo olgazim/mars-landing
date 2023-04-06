@@ -34,8 +34,6 @@ public class ViewManager {
     private Stage stage;
     private List<MenuButton> menuButtonList;
     private MarsLanderSubScene scoreSubScene;
-    private boolean isScoresPresented;
-    private MarsLanderSubScene subSceneToHide;
 
     public ViewManager() {
         anchorPane = new AnchorPane();
@@ -81,7 +79,8 @@ public class ViewManager {
         playBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
-//                displaySubScene();
+                GameViewManager gameManager = new GameViewManager();
+                gameManager.createNewGame(stage);
             }
         });
     }
@@ -102,17 +101,9 @@ public class ViewManager {
         scoreBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
-                displaySubScene(scoreSubScene);
+                scoreSubScene.moveSubScene();
             }
         });
-    }
-
-    private void displaySubScene(final MarsLanderSubScene subScene) {
-        if(subSceneToHide != null) {
-            subSceneToHide.moveSubScene();
-        }
-        subScene.moveSubScene();
-        subSceneToHide = subScene;
     }
 
     private void createMenuButtons() {
