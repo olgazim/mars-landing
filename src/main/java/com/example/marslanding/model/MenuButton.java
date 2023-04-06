@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;
 public class MenuButton extends Button {
     private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
     private final String BUTTON_PRESSED_STYLE = "-fx-background-color: #564962;";
-    private final String BUTTON_STYLE = "-fx-background-color: #6C5B7B;";
+    private final String BUTTON_STYLE = "-fx-background-color: #6C5B7B; -fx-text-fill: #ff7400";
 
     public MenuButton (String label) {
         setText(label);
