@@ -42,7 +42,9 @@ public class GameViewManager {
     private int angle;
     private AnimationTimer timer;
 
-
+    private final static String LANDING_AREA = "landing_area.png";
+    private ImageView explosionImage;
+    private final static String EXPLOSION = "crash.png";
     private ImageView landingArea;
 
     public GameViewManager() {
@@ -206,6 +208,17 @@ public class GameViewManager {
             spaceShipImage.relocate(x - centerX, y - centerY);
         }
 
+        // When crash
+        if (shipBoundsY >= 550) {
+            explosionImage = new ImageView(EXPLOSION);
+            explosionImage.setLayoutX(SPACE_SHIP_STARTING_X/2.0);
+            explosionImage.setLayoutY(SPACE_SHIP_STARTING_Y);
+            actionPane.getChildren().remove(spaceShipImage);
+            actionPane.getChildren().add(explosionImage);
+            timer.stop();
+        }
+
+        // When landing successfully
         if (landingArea.getBoundsInParent().intersects(shipBounds)) {
             timer.stop();
         }
