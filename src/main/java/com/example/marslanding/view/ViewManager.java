@@ -57,16 +57,17 @@ public class ViewManager {
         astronaut.setFitWidth(LOGO_WIDTH);
         astronaut.setLayoutX(LOGO_X_POSITION);
         astronaut.setLayoutY(LOGO_Y_POSITION);
+        astronaut.setEffect(new DropShadow(10, Color.rgb(72, 83, 95)));
         astronaut.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(final MouseEvent event) {
-                astronaut.setEffect(new DropShadow(10, Color.rgb(99, 57, 226)));
+                astronaut.setEffect(new DropShadow(10, Color.rgb(6, 18, 33)));
             }
         });
         astronaut.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(final MouseEvent event) {
-                astronaut.setEffect(null);
+                 astronaut.setEffect(new DropShadow(10, Color.rgb(72, 83, 95)));
             }
         });
         anchorPane.getChildren().add(astronaut);
@@ -123,7 +124,7 @@ public class ViewManager {
 //TODO: fix image path so we could put image to resources
     private void createBackground() {
         // get image file
-        Image background = new Image("galaxy_background.jpg", 1024, 648, false, true);
+        Image background = new Image("galaxy_background.png", 1024, 648, false, true);
         // create background image
         BackgroundImage backgroundImage = new BackgroundImage(background,BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,

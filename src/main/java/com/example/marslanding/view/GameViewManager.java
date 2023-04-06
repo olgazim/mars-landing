@@ -1,6 +1,5 @@
 package com.example.marslanding.view;
 
-import com.example.marslanding.model.SmallInfoLabel;
 import com.example.marslanding.model.SpaceShip;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -26,9 +25,10 @@ public class GameViewManager {
     private static final double MAX_FORCE = 2.5;
     private static final double ACCELERATION = 0.05;
     private static final double MAX_THRUST = 2;
-    private static final String SPACE_BACKGROUND_IMAGE = "game_background.png";
-
-    private static final String STAR = "star.png";
+     private static final String STAR = "star.png";
+    private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
+    private static final String LANDING_AREA = "landing_area.png";
+    private final static String EXPLOSION = "crash.png";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
