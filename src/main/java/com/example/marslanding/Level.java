@@ -1,11 +1,7 @@
-package com.example.marslanding;
-
-import com.example.marslanding.model.SpaceShip;
-
 /**
  * Represents a level in the game.
  *
- * @author Olga Zimina
+ * @author Olga Zimina, Shuyi Liu
  * @version 1.0
  */
 public class Level {
@@ -18,7 +14,7 @@ public class Level {
     private Planet planet;
     // The spaceship used for the mission
     private SpaceShip spaceShip;
-//    // The ship controllers mode
+    //    // The ship controllers mode
 //    private Mode mode;
     // The number of the level
     private int number;
@@ -30,9 +26,48 @@ public class Level {
     private boolean isLanded;
 
     /**
-     * Constructs an object of com.example.marslanding.Level.
+     * Constructs an object of Level.
      */
     public Level() {
+    }
+
+    public Level(Planet planet, SpaceShip spaceShip, int number, String name) {
+        this.planet = planet;
+        this.spaceShip = spaceShip;
+        this.number = number;
+        this.name = name;
+        this.isCrashed = false;
+        this.isLanded = false;
+    }
+
+    public double[][] calculateNewShipCoordinate(){
+        // >>>>
+        double[][] currentCoordinates = spaceShip.getCurrentCoordinates();
+        double[][] newCoordinates = new double[1][2];
+
+        double currentX = currentCoordinates[0][0];
+        double currentY = currentCoordinates[0][1];
+
+        double speed = spaceShip.getCurrentSpeed();
+        double direction = spaceShip.getCurrentDirection();
+        double acceleration = spaceShip.getAcceleration();
+        double time = 1; //time interval of 1 second
+
+        // Calculate the new position based on the current speed and direction
+        double deltaX = speed * Math.cos(Math.toRadians(direction)) * time;
+        double deltaY = speed * Math.sin(Math.toRadians(direction)) * time;
+
+        // Update the current speed based on the acceleration
+        speed += acceleration * time;
+
+        // Update the current direction based on any external forces (e.g. gravity)
+        // You will need to calculate this based on the specific planet the spaceship is on
+        // Here's an example of how you could calculate the gravitational force:
+        double gravitationalForce = planet.getGravity() * spaceShip.getMass();
+        double gravitationalAcceleration = gravitationalForce / spaceShip.getMass();
+        double gravitationalDirection = planet.getGravityDirection(spaceShip.getCurrentCoordinates());
+        double gravitationalDeltaX = gravitationalAcceleration * Math.cos(Math.toRadians(gravitationalDirection)) * time;
+        double gravitationalDeltaY = gravitationalAcceleration * Math.sin(Math.toRadians(gravitationalDirection)) * time;
 
     }
 }
