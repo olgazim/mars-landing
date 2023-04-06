@@ -1,3 +1,7 @@
+package com.example.marslanding;
+
+import com.example.marslanding.model.SpaceShip;
+
 /**
  * Represents a level in the game.
  *
@@ -26,7 +30,7 @@ public class Level {
     private boolean isLanded;
 
     /**
-     * Constructs an object of Level.
+     * Constructs an object of com.example.marslanding.Level.
      */
     public Level() {
 
