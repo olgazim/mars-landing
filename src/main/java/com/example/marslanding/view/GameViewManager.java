@@ -22,9 +22,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.List;
+import java.util.Scanner;
 
 public class GameViewManager {
     private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
@@ -142,14 +142,14 @@ public class GameViewManager {
     }
 
     private void createGameElements() {
-        score = 0;
+        readScore();
         star = new ImageView(STAR);
         star.setFitHeight(40);
         star.setFitWidth(40);
         star.setLayoutX(800);
         star.setLayoutY(20);
         actionPane.getChildren().add(star);
-        pointsLabel = new SmallInfoLabel("SCORE : 0");
+        pointsLabel = new SmallInfoLabel("SCORE : " + score);
         pointsLabel.setLayoutX(850);
         pointsLabel.setLayoutY(20);
         actionPane.getChildren().add(pointsLabel);
@@ -265,6 +265,7 @@ public class GameViewManager {
             String textToSet = "SCORE : ";
             pointsLabel.setText(textToSet + score);
             showPopup(CRASH_MSG);
+            saveScoreToFile(score); // Save score to txt file
         }
 
         // When landing successfully
@@ -274,8 +275,20 @@ public class GameViewManager {
             String textToSet = "SCORE : ";
             pointsLabel.setText(textToSet + score);
             showPopup(SUCCESS_MSG);
+            saveScoreToFile(score); // Save score to txt file
         }
     }
+
+    private void saveScoreToFile(int score) {
+        try {
+            FileWriter writer = new FileWriter("score.txt");
+            writer.write(Integer.toString(score));
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Cannot write score in file!");
+        }
+    }
+
 
     private void goToMenu() {
         actionStage.close();
@@ -340,5 +353,19 @@ public class GameViewManager {
         return replayBtn;
     }
 
+    private void readScore() {
+        File scoreFile = new File("score.txt");
+        if (scoreFile.exists()) {
+            try {
+                Scanner scanner = new Scanner(scoreFile);
+                score = scanner.nextInt();
+                scanner.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            score = 0;
+        }
+    }
 }
 
