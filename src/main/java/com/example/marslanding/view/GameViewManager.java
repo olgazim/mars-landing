@@ -168,6 +168,10 @@ public class GameViewManager {
             LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
         }
 
+        if (score == 0){
+            LANDING_ZONE_SCALE = 1;
+        }
+
         image.setScaleX(LANDING_ZONE_SCALE);
         int imageWidth = (int) image.getImage().getWidth();
 
@@ -265,7 +269,7 @@ public class GameViewManager {
             String textToSet = "SCORE : ";
             pointsLabel.setText(textToSet + score);
             showPopup(CRASH_MSG);
-            saveScoreToFile(score); // Save score to txt file
+            saveScoreToFile(score);
         }
 
         // When landing successfully
@@ -275,7 +279,7 @@ public class GameViewManager {
             String textToSet = "SCORE : ";
             pointsLabel.setText(textToSet + score);
             showPopup(SUCCESS_MSG);
-            saveScoreToFile(score); // Save score to txt file
+            saveScoreToFile(score);
         }
     }
 
