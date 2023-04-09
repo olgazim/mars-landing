@@ -1,30 +1,20 @@
 package com.example.marslanding.view;
 
-import com.example.marslanding.model.MenuButton;
-import com.example.marslanding.model.SmallInfoLabel;
-import com.example.marslanding.model.SpaceShip;
+import com.example.marslanding.model.*;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.List;
 
 public class GameViewManager {
     private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
@@ -46,9 +36,9 @@ public class GameViewManager {
     private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
     private static final String LANDING_AREA = "landing_area.png";
     private final static String EXPLOSION = "crash.png";
-    private final static String SUCCESS_MSG = "Congratulations! You have completed the challenge. "
-            + "Would you like to continue playing?";
-    private final static String CRASH_MSG = "Oops! Your ship crashed. Would you like to try again?";
+    private final static String SUCCESS_MSG = "Congratulations! \nYou have completed the challenge. "
+            + "\nWould you like to continue playing?";
+    private final static String CRASH_MSG = "Oops! Your ship crashed. \nWould you like to try again?";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -68,6 +58,7 @@ public class GameViewManager {
 
     private ImageView explosionImage;
     private ImageView landingArea;
+    private LandingZone landingZone;
 
     public GameViewManager() {
         createActionStage();
@@ -154,16 +145,36 @@ public class GameViewManager {
         pointsLabel.setLayoutY(20);
         actionPane.getChildren().add(pointsLabel);
 
-        landingArea = new ImageView(LANDING_AREA);
-        setLandingAreaPosition(landingArea);
-        actionPane.getChildren().add(landingArea);
+        if (landingArea == null) {
+            landingZone = new LandingZone(
+                    LANDING_AREA,
+                    WIDTH,
+                    0,
+                    540,
+                    540
+            );
+            landingArea = landingZone.getImageView();
+            actionPane.getChildren().add(landingArea);
+        }
+
+        landingZone.setRandomPosition();
     }
 
+    private void nextLevel() {
+        if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
+            LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
+        }
 
-    private double getRandomNumber(int min, int max) {
+        landingZone.setScaleX(LANDING_ZONE_SCALE);
+
+        removeSpaceShip();
+        createNewGame(menuStage);
+    }
+
+    private double getRandomNumber(final int min, final int max) {
         return (double) ((Math.random() * (max - min)) + min);
     }
-    private void setLandingAreaPosition(ImageView image) {
+    private void setLandingAreaPosition(final ImageView image) {
         if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
             LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
         }
@@ -264,8 +275,9 @@ public class GameViewManager {
             score = 0;
             String textToSet = "SCORE : ";
             pointsLabel.setText(textToSet + score);
-            showPopup(CRASH_MSG);
+            displayActionPopup(CRASH_MSG);
         }
+
 
         // When landing successfully
         if (landingArea.getBoundsInParent().intersects(shipBounds)) {
@@ -273,7 +285,7 @@ public class GameViewManager {
             score += 10;
             String textToSet = "SCORE : ";
             pointsLabel.setText(textToSet + score);
-            showPopup(SUCCESS_MSG);
+            displayActionPopup(SUCCESS_MSG);
         }
     }
 
@@ -289,34 +301,17 @@ public class GameViewManager {
         createNewGame(menuStage);
     }
 
-
-    private void showPopup(String message) {
-        Popup popup = new Popup();
-
-        AnchorPane anchorPane = new AnchorPane();
-        anchorPane.setStyle("-fx-background-color: #E2F3EC;");
-        anchorPane.setPrefSize(200, 100);
-
-        Label label = new Label(message);
-        label.setFont(Font.font("Verdana", 12));
-        label.setLayoutY(0);
-        label.setLayoutX(85);
-
-        ButtonBar buttonBar = new ButtonBar();
-        MenuButton retryButton = createReplayButton(buttonBar, popup);
-        MenuButton menuButton = createExitButton(buttonBar, popup);
-        buttonBar.getButtons().addAll(menuButton, retryButton);
-        buttonBar.setLayoutX(10);
-        buttonBar.setLayoutY(45);
-        anchorPane.getChildren().add(label);
-        anchorPane.getChildren().add(buttonBar);
-        popup.getContent().add(anchorPane);
+    private void displayActionPopup(final String message) {
+        ActionPopup popup = new ActionPopup(message);
+        MenuButton playButton = createReplayButton(popup);
+        MenuButton exitButton = createExitButton(popup);
+        popup.buildPopUp(playButton, exitButton);
         popup.show(actionStage);
     }
 
-    public MenuButton createExitButton(ButtonBar buttonBar, Popup popup) {
+    public MenuButton createExitButton(Popup popup) {
         MenuButton exitBtn = new MenuButton("Exit");
-        buttonBar.setButtonData(exitBtn, ButtonBar.ButtonData.FINISH);
+        ButtonBar.setButtonData(exitBtn, ButtonBar.ButtonData.FINISH);
         exitBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
@@ -327,9 +322,9 @@ public class GameViewManager {
         return exitBtn;
     }
 
-    public MenuButton createReplayButton(ButtonBar buttonBar, Popup popup) {
+    public MenuButton createReplayButton(Popup popup) {
         MenuButton replayBtn = new MenuButton("Replay");
-        buttonBar.setButtonData(replayBtn, ButtonBar.ButtonData.FINISH);
+        ButtonBar.setButtonData(replayBtn, ButtonBar.ButtonData.FINISH);
         replayBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
