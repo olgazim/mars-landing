@@ -1,6 +1,5 @@
-package com.example.marslanding.model.resources;
+package com.example.marslanding.model;
 
-import com.example.marslanding.model.MenuButton;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
