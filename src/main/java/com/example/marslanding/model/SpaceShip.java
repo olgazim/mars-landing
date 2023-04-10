@@ -23,7 +23,7 @@ public class SpaceShip {
     private static final int BFR_HEIGHT = 65;
     // The X coordinate limit of the spaceship's movement
     private final double limitX;
-    // The Y coordinate limit of the spaceship's movement.
+    // The Y coordinate limit of the spaceship's movement
     private final double limitY;
     // The type of the spaceship, of type ShipType
     private final ShipType type;
