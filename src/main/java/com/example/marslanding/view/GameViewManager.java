@@ -51,6 +51,18 @@ public class GameViewManager {
 
     // The maximum thrust of the spaceship.
     private static final double MAX_THRUST = 2;
+    // int 40
+    private static final int FORTY = 40;
+    // int 800
+    private static final int EIGHT_HUNDRED = 800;
+    // int 20
+    private static final int TWENTY = 20;
+    // int 850
+    private static final int EIGHT_HUNDRED_FIFTY = 850;
+    // int 540
+    private static final int FIVE_HUNDRED_FORTY = 540;
+    // int 10
+    private static final int TEN = 10;
 
     // The filename of the image of the star.
     private static final String STAR = "star.png";
@@ -225,22 +237,22 @@ public class GameViewManager {
         System.out.println("Current score is: " + score);
 
         ImageView star = new ImageView(STAR);
-        star.setFitHeight(40);
-        star.setFitWidth(40);
-        star.setLayoutX(800);
-        star.setLayoutY(20);
+        star.setFitHeight(FORTY);
+        star.setFitWidth(FORTY);
+        star.setLayoutX(EIGHT_HUNDRED);
+        star.setLayoutY(TWENTY);
         actionPane.getChildren().add(star);
         SmallInfoLabel pointsLabel = new SmallInfoLabel("SCORE : " + score);
-        pointsLabel.setLayoutX(850);
-        pointsLabel.setLayoutY(20);
+        pointsLabel.setLayoutX(EIGHT_HUNDRED_FIFTY);
+        pointsLabel.setLayoutY(TWENTY);
         actionPane.getChildren().add(pointsLabel);
 
         if (landingArea == null) {
             landingZone = new LandingZone(
                     WIDTH,
                     0,
-                    540,
-                    540
+                    FIVE_HUNDRED_FORTY,
+                    FIVE_HUNDRED_FORTY
             );
             landingArea = landingZone.getImageView();
         }
@@ -253,7 +265,7 @@ public class GameViewManager {
     private void createGameLoop() {
         timer = new AnimationTimer() {
             @Override
-            public void handle(long l) {
+            public void handle(final long l) {
                 moveSpaceShip();
             }
         };
@@ -264,10 +276,13 @@ public class GameViewManager {
      * Moves the spaceship.
      */
     public void moveSpaceShip() {
-        double deltaX = 0, deltaY = 0;
+        double deltaX = 0;
+        double deltaY = 0;
 
         if (thrust) {
-            if (thrustValue < MAX_THRUST) thrustValue += ACCELERATION;
+            if (thrustValue < MAX_THRUST) {
+                thrustValue += ACCELERATION;
+            }
 
             force -= INITIAL_FORCE;
             deltaY -= thrustValue;
@@ -322,7 +337,7 @@ public class GameViewManager {
 
             if (isLanded) {
                 timer.stop();
-                score += 10;
+                score += TEN;
                 saveScoreToFile(score);
                 showSuccessPopup();
             }
@@ -427,7 +442,7 @@ public class GameViewManager {
      @param action The action to be performed on button click.
      @return The replay button.
      */
-    public MenuButton createReplayButton(Popup popup, String label, Runnable action) {
+    public MenuButton createReplayButton(final Popup popup, final String label, final Runnable action) {
         MenuButton replayBtn = new MenuButton(label);
         ButtonBar.setButtonData(replayBtn, ButtonBar.ButtonData.OK_DONE);
         replayBtn.setOnAction(event -> {
@@ -497,7 +512,9 @@ public class GameViewManager {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(landingZoneScale, force, thrustValue, actionPane, actionScene, actionStage, menuStage, spaceShipImage, spaceShip, thrust, leftKeyFlag, rightKeyFlag, score, timer, explosionImage, landingArea, landingZone);
+        return Objects.hash(landingZoneScale, force, thrustValue, actionPane, actionScene, actionStage,
+                menuStage, spaceShipImage, spaceShip, thrust, leftKeyFlag, rightKeyFlag, score, timer,
+                explosionImage, landingArea, landingZone);
     }
     /**
      * Returns a string representation of the GameViewManager object.
