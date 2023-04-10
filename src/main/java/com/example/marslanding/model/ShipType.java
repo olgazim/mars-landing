@@ -1,4 +1,4 @@
-package com.example.marslanding;
+package com.example.marslanding.model;
 
 /**
  * Enum representing the different types of spaceships.
