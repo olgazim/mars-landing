@@ -3,71 +3,136 @@ package com.example.marslanding.view;
 import com.example.marslanding.model.ShipType;
 import com.example.marslanding.model.*;
 import javafx.animation.AnimationTimer;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
+/**
+ * The GameViewManager class manages the game view and contains methods for creating the game scene,
+ * setting up key listeners, and managing game elements such as the spaceship, landing zone, and score.
+ */
 public class GameViewManager {
-    private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
+    // The width of the game view.
     private static final int WIDTH = 1024;
+
+    //The height of the game view.
     private static final int HEIGHT = 648;
+
+    // The starting x-coordinate of the spaceship.
     private static final int SPACE_SHIP_STARTING_X = WIDTH / 2;
+
+    // The starting y-coordinate of the spaceship.
     private static final int SPACE_SHIP_STARTING_Y = HEIGHT / 4;
+
+    // The initial force of the spaceship.
     private static final double INITIAL_FORCE = 0.2;
+
+    // The maximum force allowed to reach the landing zone successfully.
     private static final double GOAL_FORCE_MAX = 1.5;
+
+    // The maximum force of the spaceship.
     private static final double MAX_FORCE = 2.5;
+
+    // The acceleration of the spaceship.
     private static final double ACCELERATION = 0.05;
+
+    // The maximum thrust of the spaceship.
     private static final double MAX_THRUST = 2;
+
+    // The scale of the landing zone.
     private double LANDING_ZONE_SCALE = 1;
-    private double LANDING_ZONE_SCALE_MIN = 0.2;
-    private double LANDING_ZONE_SCALE_STEP = 0.1;
-     private static final String STAR = "star.png";
+
+    // The filename of the image of the star.
+    private static final String STAR = "star.png";
+
+    // The filename of the image of the space background.
     private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
+
+    // The filename of the image of the explosion.
     private final static String EXPLOSION = "crash.png";
-    private final static String SUCCESS_MSG = "Congratulations! \nYou have completed the challenge. "
-            + "\nWould you like to continue playing?";
+
+    // The message shown when the player successfully completes a level.
+    private final static String SUCCESS_MSG = """
+            Congratulations!\s
+            You have completed the challenge.\s
+            Would you like to continue playing?""";
+
+    // The message shown when the player crashes the spaceship.
     private final static String CRASH_MSG = "Oops! Your ship crashed. \nWould you like to try again?";
+
+    // The label of the button used for continuing to the next level.
     private final static String continuePlayingBtnLabel = "Next Level";
+
+    // The label of the button used for retrying the level.
     private final static String retryBtnLabel = "Retry";
+
+    // The current force of the spaceship.
     private double force = INITIAL_FORCE;
+
+    // The current thrust value of the spaceship.
     private double thrustValue = INITIAL_FORCE;
+
+    // a AnchorPane object for the anchor pane of the game view.
     private AnchorPane actionPane;
+
+    // a Scene object for the scene of the game view.
     private Scene actionScene;
+
+    // a Stage object for the stage of the game view.
     private Stage actionStage;
+
+    // a Stage object for the stage of the menu view.
     private Stage menuStage;
+
+    // a ImageView object for the image view of the spaceship.
     private ImageView spaceShipImage;
-    private ImageView star;
-    private SmallInfoLabel pointsLabel;
+
+    // a SpaceShip object for the spaceship model.
     private SpaceShip spaceShip;
+
+    // Boolean flag to indicate if the spaceship is thrusting or not.
     private boolean thrust;
+
+    // Boolean flag to indicate if the left arrow key is currently pressed.
     private boolean leftKeyFlag;
+
+    // Boolean flag to indicate if the right arrow key is currently pressed.
     private boolean rightKeyFlag;
-    private int angle;
+
+    // The player's current score.
     private int score;
+
+    // The AnimationTimer object used to update the game state.
     private AnimationTimer timer;
 
+    // The ImageView object used to display the explosion animation.
     private ImageView explosionImage;
+
+    // The ImageView object used to display the landing area background image.
     private ImageView landingArea;
+
+    // The LandingZone object representing the landing zone on the game board.
     private LandingZone landingZone;
 
+    /**
+     * Constructs a new GameViewManager object and creates the action stage and key listeners.
+     */
     public GameViewManager() {
         createActionStage();
         createKeyListeners();
     }
 
+    // Creates the action stage and scene.
     private void createActionStage() {
         actionPane = new AnchorPane();
         actionScene = new Scene(actionPane, WIDTH, HEIGHT);
@@ -75,36 +140,34 @@ public class GameViewManager {
         actionStage.setScene(actionScene);
     }
 
+    // Creates the key listeners for the action scene.
     private void createKeyListeners() {
-        actionScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(final KeyEvent keyEvent) {
-                KeyCode keyboardKey = keyEvent.getCode();
-                if (keyboardKey == KeyCode.LEFT) {
-                    leftKeyFlag = true;
-                } else if (keyboardKey == KeyCode.RIGHT) {
-                    rightKeyFlag = true;
-                } else if (keyboardKey == KeyCode.UP) {
-                    thrust = true;
-                }
+        actionScene.setOnKeyPressed(keyEvent -> {
+            KeyCode keyboardKey = keyEvent.getCode();
+            if (keyboardKey == KeyCode.LEFT) {
+                leftKeyFlag = true;
+            } else if (keyboardKey == KeyCode.RIGHT) {
+                rightKeyFlag = true;
+            } else if (keyboardKey == KeyCode.UP) {
+                thrust = true;
             }
         });
 
-        actionScene.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(final KeyEvent keyEvent) {
-                KeyCode keyboardKey = keyEvent.getCode();
-                if (keyboardKey == KeyCode.LEFT) {
-                    leftKeyFlag = false;
-                } else if (keyboardKey == KeyCode.RIGHT) {
-                    rightKeyFlag = false;
-                } else {
-                    thrust = false;
-                }
+        actionScene.setOnKeyReleased(keyEvent -> {
+            KeyCode keyboardKey = keyEvent.getCode();
+            if (keyboardKey == KeyCode.LEFT) {
+                leftKeyFlag = false;
+            } else if (keyboardKey == KeyCode.RIGHT) {
+                rightKeyFlag = false;
+            } else {
+                thrust = false;
             }
         });
     }
 
+    /**
+     * Creates the space background image.
+     */
     public void createSpaceBackground() {
         // get image file
         Image background = new Image(SPACE_BACKGROUND_IMAGE, WIDTH, HEIGHT, false, true);
@@ -115,6 +178,12 @@ public class GameViewManager {
         actionPane.setBackground(new Background(backgroundImage));
     }
 
+    /**
+     * Creates a new game with the specified menu stage and ship type.
+     *
+     * @param menuStage the menu stage to hide
+     * @param type the ship type to create
+     */
     public void createNewGame(final Stage menuStage, final ShipType type) {
         force = INITIAL_FORCE;
         this.menuStage = menuStage;
@@ -124,6 +193,10 @@ public class GameViewManager {
         createGameLoop();
         actionStage.show();
     }
+
+
+    // Creates the spaceship image.
+    // @param type the ship type to create for future improvement
     private void createSpaceShip(final ShipType type) {
         spaceShip = new SpaceShip(ShipType.FALCON9,
                 WIDTH,
@@ -132,21 +205,25 @@ public class GameViewManager {
         actionPane.getChildren().add(spaceShipImage);
     }
 
+    // Removes the spaceship image.
     private void removeSpaceShip() {
         actionPane.getChildren().remove(spaceShipImage);
     }
+
+    // Creates the game elements.
+    // @param type the ship type to create
     private void createGameElements(ShipType type) {
         score = 0;
         readScore();
         System.out.println("Current score is: " + score);
 
-        star = new ImageView(STAR);
+        ImageView star = new ImageView(STAR);
         star.setFitHeight(40);
         star.setFitWidth(40);
         star.setLayoutX(800);
         star.setLayoutY(20);
         actionPane.getChildren().add(star);
-        pointsLabel = new SmallInfoLabel("SCORE : " + score);
+        SmallInfoLabel pointsLabel = new SmallInfoLabel("SCORE : " + score);
         pointsLabel.setLayoutX(850);
         pointsLabel.setLayoutY(20);
         actionPane.getChildren().add(pointsLabel);
@@ -164,25 +241,8 @@ public class GameViewManager {
         landingZone.setRandomPosition();
         createSpaceShip(type);
     }
-    private double getRandomNumber(final int min, final int max) {
-        return (double) ((Math.random() * (max - min)) + min);
-    }
-    private void setLandingAreaPosition(final ImageView image) {
-        if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
-            LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
-        }
 
-        if (score == 0) {
-            LANDING_ZONE_SCALE = 1;
-        }
-
-        image.setScaleX(LANDING_ZONE_SCALE);
-        int imageWidth = (int) image.getImage().getWidth();
-
-        image.setX(getRandomNumber(0, WIDTH - imageWidth));
-        image.setY(540);
-    }
-
+    // Creates the game loop.
     private void createGameLoop() {
         timer = new AnimationTimer() {
             @Override
@@ -193,6 +253,9 @@ public class GameViewManager {
         timer.start();
     }
 
+    /**
+     * Moves the spaceship.
+     */
     public void moveSpaceShip() {
         double deltaX = 0, deltaY = 0;
 
@@ -228,6 +291,10 @@ public class GameViewManager {
         checkPosition(spaceShip, landingZone);
     }
 
+
+     // Checks the position of the spaceship and landing zone.
+     // @param ship the spaceship, left for future use.
+     // @param landingSite the landing zone
     private void checkPosition(final SpaceShip ship, final LandingZone landingSite) {
         final double landingZoneBaseline = landingSite.getBaseLine();
         final double shipBottomLine = spaceShip.findBottomLine();
@@ -269,14 +336,20 @@ public class GameViewManager {
         }
     }
 
+    // Shows a success popup with a message and continue playing button.
+    // Calls the nextLevel method on continue playing button click.
     private void showSuccessPopup() {
         displayActionPopup(SUCCESS_MSG, continuePlayingBtnLabel, this::nextLevel);
     }
 
+    // Shows a failure popup with a message and retry button.
+    // Calls the retry method on retry button click.
     private void showFailurePopup() {
         displayActionPopup(CRASH_MSG, retryBtnLabel, this::retry);
     }
 
+    // Saves the score to a file with the name "score.txt".
+    // @param score The score to be saved.
     private void saveScoreToFile(int score) {
         try {
             FileWriter writer = new FileWriter("score.txt");
@@ -287,21 +360,25 @@ public class GameViewManager {
         }
     }
 
-
+    // Closes the action stage and shows the menu stage.
     private void goToMenu() {
         actionStage.close();
         menuStage.show();
     }
 
+    // Restarts the game with the same spaceship type after a crash.
     private void retry() {
         ShipType type = spaceShip.getType();
         actionPane.getChildren().remove(explosionImage);
         createNewGame(menuStage, type);
     }
 
+    // Starts the next level of the game with a smaller landing zone.
     private void nextLevel() {
         ShipType type = spaceShip.getType();
+        double LANDING_ZONE_SCALE_MIN = 0.2;
         if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
+            double LANDING_ZONE_SCALE_STEP = 0.1;
             LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
         }
 
@@ -311,6 +388,10 @@ public class GameViewManager {
         createNewGame(menuStage, type);
     }
 
+    // Displays an action popup with a message and buttons.
+    // @param message The message to be displayed.
+    // @param label The label for the action button.
+    // @param action The action to be performed on button click.
     private void displayActionPopup(final String message, String label, Runnable action) {
         ActionPopup popup = new ActionPopup(message);
         MenuButton playButton = createReplayButton(popup, label, action);
@@ -319,32 +400,41 @@ public class GameViewManager {
         popup.show(actionStage);
     }
 
+    /**
+     Creates an exit button for a popup.
+     @param popup The popup to be closed on button click.
+     @return The exit button.
+     */
     public MenuButton createExitButton(Popup popup) {
         MenuButton exitBtn = new MenuButton("Exit");
         ButtonBar.setButtonData(exitBtn, ButtonBar.ButtonData.FINISH);
-        exitBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent event) {
-                popup.hide();
-                goToMenu();
-            }
+        exitBtn.setOnAction(event -> {
+            popup.hide();
+            goToMenu();
         });
         return exitBtn;
     }
 
+    /**
+     Creates a replay button for a popup.
+     @param popup The popup to be closed on button click.
+     @param label The label for the replay button.
+     @param action The action to be performed on button click.
+     @return The replay button.
+     */
     public MenuButton createReplayButton(Popup popup, String label, Runnable action) {
         MenuButton replayBtn = new MenuButton(label);
         ButtonBar.setButtonData(replayBtn, ButtonBar.ButtonData.OK_DONE);
-        replayBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent event) {
-                popup.hide();
-                action.run();
-            }
+        replayBtn.setOnAction(event -> {
+            popup.hide();
+            action.run();
         });
         return replayBtn;
     }
-
+    /**
+     Reads the score from the file with the name "score.txt".
+     If the file does not exist, sets the score to 0.
+     */
     private void readScore() {
         File scoreFile = new File("score.txt");
         if (scoreFile.exists()) {
@@ -358,6 +448,58 @@ public class GameViewManager {
         } else {
             score = 0;
         }
+    }
+
+    /**
+     * Returns a string representation of the GameViewManager object.
+     *
+     * @return A string representation of the GameViewManager object.
+     */
+    @Override
+    public String toString() {
+        return "GameViewManager{" +
+                "LANDING_ZONE_SCALE=" + LANDING_ZONE_SCALE +
+                ", force=" + force +
+                ", thrustValue=" + thrustValue +
+                ", actionPane=" + actionPane +
+                ", actionScene=" + actionScene +
+                ", actionStage=" + actionStage +
+                ", menuStage=" + menuStage +
+                ", spaceShipImage=" + spaceShipImage +
+                ", spaceShip=" + spaceShip +
+                ", thrust=" + thrust +
+                ", leftKeyFlag=" + leftKeyFlag +
+                ", rightKeyFlag=" + rightKeyFlag +
+                ", score=" + score +
+                ", timer=" + timer +
+                ", explosionImage=" + explosionImage +
+                ", landingArea=" + landingArea +
+                ", landingZone=" + landingZone +
+                '}';
+    }
+
+    /**
+     * Compares this GameViewManager object to the given object.
+     *
+     * @param o The object that is compared to this GameViewManager object
+     * @return True - if the given object is of type GameViewManager with the same state as this object,
+     * false - otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameViewManager that = (GameViewManager) o;
+        return Double.compare(that.LANDING_ZONE_SCALE, LANDING_ZONE_SCALE) == 0 && Double.compare(that.force, force) == 0 && Double.compare(that.thrustValue, thrustValue) == 0 && thrust == that.thrust && leftKeyFlag == that.leftKeyFlag && rightKeyFlag == that.rightKeyFlag && score == that.score && Objects.equals(actionPane, that.actionPane) && Objects.equals(actionScene, that.actionScene) && Objects.equals(actionStage, that.actionStage) && Objects.equals(menuStage, that.menuStage) && Objects.equals(spaceShipImage, that.spaceShipImage) && Objects.equals(spaceShip, that.spaceShip) && Objects.equals(timer, that.timer) && Objects.equals(explosionImage, that.explosionImage) && Objects.equals(landingArea, that.landingArea) && Objects.equals(landingZone, that.landingZone);
+    }
+
+    /**
+     * Returns a hash code for this GameViewManager object.
+     * @return A hash code value for this GameViewManager object
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(LANDING_ZONE_SCALE, force, thrustValue, actionPane, actionScene, actionStage, menuStage, spaceShipImage, spaceShip, thrust, leftKeyFlag, rightKeyFlag, score, timer, explosionImage, landingArea, landingZone);
     }
 }
 
