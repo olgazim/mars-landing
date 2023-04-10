@@ -137,18 +137,19 @@ public class GameViewManager {
     }
     private void createGameElements(ShipType type) {
         score = 0;
-        if (star == null) {
-            star = new ImageView(STAR);
-            star.setFitHeight(40);
-            star.setFitWidth(40);
-            star.setLayoutX(800);
-            star.setLayoutY(20);
-            actionPane.getChildren().add(star);
-            pointsLabel = new SmallInfoLabel("SCORE : " + score);
-            pointsLabel.setLayoutX(850);
-            pointsLabel.setLayoutY(20);
-            actionPane.getChildren().add(pointsLabel);
-        }
+        readScore();
+        System.out.println("Current score is: " + score);
+
+        star = new ImageView(STAR);
+        star.setFitHeight(40);
+        star.setFitWidth(40);
+        star.setLayoutX(800);
+        star.setLayoutY(20);
+        actionPane.getChildren().add(star);
+        pointsLabel = new SmallInfoLabel("SCORE : " + score);
+        pointsLabel.setLayoutX(850);
+        pointsLabel.setLayoutY(20);
+        actionPane.getChildren().add(pointsLabel);
 
         if (landingArea == null) {
             landingZone = new LandingZone(
@@ -247,12 +248,14 @@ public class GameViewManager {
 
             if (isLanded) {
                 timer.stop();
-                // add score
+                score += 10;
+                saveScoreToFile(score);
                 showSuccessPopup();
             }
             if (isCrashed) {
                 timer.stop();
-                // add score
+                score = 0;
+                saveScoreToFile(score);
                 explosionImage = new ImageView(EXPLOSION);
                 explosionImage.setLayoutX(SPACE_SHIP_STARTING_X / 2.0);
                 explosionImage.setLayoutY(SPACE_SHIP_STARTING_Y);
