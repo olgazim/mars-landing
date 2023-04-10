@@ -43,34 +43,21 @@ public class ViewManager {
     private static final int LOGO_X_POSITION = 900;
     // logo's y coordinate
     private static final int LOGO_Y_POSITION = 230;
-    // int 10
-    private static final int TEN = 10;
-    // int 72
-    private static final int SEVENTEEN_TWO = 72;
-    // int 83
-    private static final int EIGHTY_THREE = 83;
-    // int 95
-    private static final int NINETY_FIVE = 95;
-    // int 6
-    private static final int SIX = 6;
-    // int 18
-    private static final int EIGHTEEN = 18;
-    // int 33
-    private static final int THIRTY_THREE = 33;
-    // int 72
-    private static final int SEVENTY_TWO = 72;
-    // int 25
-    private static final int TWENTY_FIVE = 25;
-    // int 630
-    private static final int SIX_HUNDRED_THIRTY = 630;
-    // int 330
-    private static final int THREE_HUNDRED_THIRTY = 330;
-    // int 100
-    private static final int ONE_HUNDRED = 100;
-    // int 1024
-    private static final int ONE_THOUSAND_TWENTY_FOUR = 1024;
-    // int 648
-    private static final int SIX_HUNDRED_FORTY_EIGHT = 648;
+    // The shadow size
+    private static final int SHADOW_SIZE = 10;
+
+    // Shadow color of astronaut on mouse hover
+    private static final Color HOVERING_SHADOW_COLOR = Color.rgb(6, 18, 33);
+    // Shadow color of astronaut
+    private static final Color SHADOW_COLOR = Color.rgb(72, 83, 95);
+    // The font size for the label text
+    private static final int FONT_SIZE = 25;
+    // The y-coordinate of the score label
+    private static final int LABEL_Y_COORDINATE = 330;
+    // The x-coordinate of the score label
+    private static final int LABEL_X_COORDINATE = 648;
+    // Button padding
+    private static final int BUTTON_PADDING = 100;
     // path to the font used in the game
     private static final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
     // an AnchorPane object
@@ -115,11 +102,11 @@ public class ViewManager {
         astronaut.setFitWidth(LOGO_WIDTH);
         astronaut.setLayoutX(LOGO_X_POSITION);
         astronaut.setLayoutY(LOGO_Y_POSITION);
-        astronaut.setEffect(new DropShadow(TEN, Color.rgb(SEVENTEEN_TWO, EIGHTY_THREE, NINETY_FIVE)));
+        astronaut.setEffect(new DropShadow(SHADOW_SIZE, SHADOW_COLOR));
         astronaut.setOnMouseEntered(event -> astronaut.setEffect(
-                new DropShadow(TEN, Color.rgb(SIX, EIGHTEEN, THIRTY_THREE))));
+                new DropShadow(SHADOW_SIZE, HOVERING_SHADOW_COLOR)));
         astronaut.setOnMouseExited(event -> astronaut.setEffect(
-                new DropShadow(TEN, Color.rgb(SEVENTY_TWO, EIGHTY_THREE, NINETY_FIVE))));
+                new DropShadow(SHADOW_SIZE, SHADOW_COLOR)));
         anchorPane.getChildren().add(astronaut);
     }
 
@@ -152,9 +139,9 @@ public class ViewManager {
                     Scanner scanner = new Scanner(scoreFile);
                     int score = scanner.nextInt();
                     Text scoreLabel = new Text("Score: " + score);
-                    scoreLabel.setFont(Font.loadFont(new FileInputStream(FONT_PATH), TWENTY_FIVE));
-                    scoreLabel.setLayoutX(SIX_HUNDRED_FORTY_EIGHT);
-                    scoreLabel.setLayoutY(THREE_HUNDRED_THIRTY);
+                    scoreLabel.setFont(Font.loadFont(new FileInputStream(FONT_PATH), FONT_SIZE));
+                    scoreLabel.setLayoutX(LABEL_X_COORDINATE);
+                    scoreLabel.setLayoutY(LABEL_Y_COORDINATE);
                     anchorPane.getChildren().add(scoreLabel);
                 } catch (FileNotFoundException e) {
                     System.out.println("Cannot find score.txt!");
@@ -174,7 +161,7 @@ public class ViewManager {
     // @param button the button to add
     private void addMenuButtons(final MenuButton button) {
         button.setLayoutX(MENU_BUTTON_START_X);
-        button.setLayoutY(MENU_BUTTON_START_Y + menuButtonList.size() * ONE_HUNDRED);
+        button.setLayoutY(MENU_BUTTON_START_Y + menuButtonList.size() * BUTTON_PADDING);
         menuButtonList.add(button);
         anchorPane.getChildren().add(button);
 
@@ -185,7 +172,7 @@ public class ViewManager {
     private void createBackground() {
         // get image file
         Image background = new Image(
-                "galaxy_background.png", ONE_THOUSAND_TWENTY_FOUR, SIX_HUNDRED_FORTY_EIGHT, false, true);
+                "galaxy_background.png", WIDTH, HEIGHT, false, true);
         // create background image
         BackgroundImage backgroundImage = new BackgroundImage(background, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
@@ -207,31 +194,19 @@ public class ViewManager {
     @Override
     public String toString() {
         return "ViewManager{"
-                +
-                "FONT_PATH='" + FONT_PATH
+                + "FONT_PATH='" + FONT_PATH
                 + '\''
-                +
-                ", anchorPane="
-                +
-                anchorPane
-                +
-                ", scene="
-                +
-                scene
-                +
-                ", stage="
-                +
-                stage
-                +
-                ", menuButtonList="
-                +
-                menuButtonList
-                +
-                ", scoreSubScene="
-                +
-                scoreSubScene
-                +
-                '}';
+                + ", anchorPane="
+                + anchorPane
+                + ", scene="
+                + scene
+                + ", stage="
+                + stage
+                + ", menuButtonList="
+                + menuButtonList
+                + ", scoreSubScene="
+                + scoreSubScene
+                + '}';
     }
 
     /**
