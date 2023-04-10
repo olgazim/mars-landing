@@ -53,7 +53,9 @@ public class SmallInfoLabel extends Label {
         setLabelFont();
         setText(text);
     }
-
+    /*
+       Sets the font for the label text.
+    */
     private void setLabelFont() {
         try {
             setFont(Font.loadFont(new FileInputStream(FONT_PATH), FONT_SIZE));
