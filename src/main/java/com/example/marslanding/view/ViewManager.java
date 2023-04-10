@@ -12,10 +12,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class ViewManager {
     private static final int WIDTH = 1024;
@@ -26,6 +32,7 @@ public class ViewManager {
     private static final int LOGO_WIDTH = 100;
     private static final int LOGO_X_POSITION = 900;
     private static final int LOGO_Y_POSITION = 230;
+    private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
 
     private AnchorPane anchorPane;
     private Scene scene;
@@ -101,6 +108,20 @@ public class ViewManager {
             @Override
             public void handle(final ActionEvent event) {
                 scoreSubScene.moveSubScene();
+                File scoreFile = new File("score.txt");
+                if (scoreFile.exists()) {
+                    try {
+                        Scanner scanner = new Scanner(scoreFile);
+                        int score = scanner.nextInt();
+                        Text scoreLabel = new Text("Score: " + score);
+                        scoreLabel.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 25));
+                        scoreLabel.setLayoutX(630);
+                        scoreLabel.setLayoutY(330);
+                        anchorPane.getChildren().add(scoreLabel);
+                    } catch (FileNotFoundException e) {
+                        System.out.println("Cannot find score.txt!");
+                    }
+                }
             }
         });
     }
@@ -134,5 +155,4 @@ public class ViewManager {
         scoreSubScene = new MarsLanderSubScene();
         anchorPane.getChildren().add(scoreSubScene);
     }
-
 }
