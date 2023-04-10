@@ -1,10 +1,10 @@
 package com.example.marslanding.view;
 
+import com.example.marslanding.model.ShipType;
 import com.example.marslanding.model.*;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar;
@@ -22,9 +22,7 @@ public class GameViewManager {
     private static final int HEIGHT = 648;
     private static final int SPACE_SHIP_STARTING_X = WIDTH / 2;
     private static final int SPACE_SHIP_STARTING_Y = HEIGHT / 4;
-    private static final int SMALL_SPACE_SHIP_SIZE = 50;
     private static final double INITIAL_FORCE = 0.2;
-    private static final double GOAL_FORCE_MIN = 0;
     private static final double GOAL_FORCE_MAX = 1.5;
     private static final double MAX_FORCE = 2.5;
     private static final double ACCELERATION = 0.05;
@@ -34,11 +32,12 @@ public class GameViewManager {
     private double LANDING_ZONE_SCALE_STEP = 0.1;
      private static final String STAR = "star.png";
     private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
-    private static final String LANDING_AREA = "landing_area.png";
     private final static String EXPLOSION = "crash.png";
     private final static String SUCCESS_MSG = "Congratulations! \nYou have completed the challenge. "
             + "\nWould you like to continue playing?";
     private final static String CRASH_MSG = "Oops! Your ship crashed. \nWould you like to try again?";
+    private final static String continuePlayingBtnLabel = "Next Level";
+    private final static String retryBtnLabel = "Retry";
     private double force = INITIAL_FORCE;
     private double thrustValue = INITIAL_FORCE;
     private AnchorPane actionPane;
@@ -112,27 +111,27 @@ public class GameViewManager {
         actionPane.setBackground(new Background(backgroundImage));
     }
 
-    //    TODO: will need to pass here the type of our ship and based on that choose picture
-    public void createSpaceShip() {
-        spaceShipImage = new ImageView("small_space_ship.png");
-        spaceShipImage.setFitHeight(SMALL_SPACE_SHIP_SIZE);
-        spaceShipImage.setFitWidth(SMALL_SPACE_SHIP_SIZE);
-        spaceShipImage.setLayoutX(SPACE_SHIP_STARTING_X);
-        spaceShipImage.setLayoutY(SPACE_SHIP_STARTING_Y);
-        actionPane.getChildren().add(spaceShipImage);
-    }
-
-    public void createNewGame(final Stage menuStage) {
+    public void createNewGame(final Stage menuStage, final ShipType type) {
+        force = INITIAL_FORCE;
         this.menuStage = menuStage;
         this.menuStage.hide();
         createSpaceBackground();
-        createGameElements();
-        createSpaceShip();
+        createGameElements(type);
         createGameLoop();
         actionStage.show();
     }
+    private void createSpaceShip(final ShipType type) {
+        spaceShip = new SpaceShip(ShipType.FALCON9,
+                WIDTH,
+                HEIGHT);
+        spaceShipImage = spaceShip.getShipImage();
+        actionPane.getChildren().add(spaceShipImage);
+    }
 
-    private void createGameElements() {
+    private void removeSpaceShip() {
+        actionPane.getChildren().remove(spaceShipImage);
+    }
+    private void createGameElements(ShipType type) {
         score = 0;
         star = new ImageView(STAR);
         star.setFitHeight(40);
@@ -144,33 +143,19 @@ public class GameViewManager {
         pointsLabel.setLayoutX(850);
         pointsLabel.setLayoutY(20);
         actionPane.getChildren().add(pointsLabel);
-
         if (landingArea == null) {
             landingZone = new LandingZone(
-                    LANDING_AREA,
                     WIDTH,
                     0,
                     540,
                     540
             );
             landingArea = landingZone.getImageView();
-            actionPane.getChildren().add(landingArea);
         }
-
+        actionPane.getChildren().add(landingArea);
         landingZone.setRandomPosition();
+        createSpaceShip(type);
     }
-
-    private void nextLevel() {
-        if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
-            LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
-        }
-
-        landingZone.setScaleX(LANDING_ZONE_SCALE);
-
-        removeSpaceShip();
-        createNewGame(menuStage);
-    }
-
     private double getRandomNumber(final int min, final int max) {
         return (double) ((Math.random() * (max - min)) + min);
     }
@@ -227,66 +212,55 @@ public class GameViewManager {
         }
 
         deltaY += force;
-
-        moveShipBy(deltaX, deltaY);
+        spaceShip.moveShipBy(deltaX, deltaY);
+        checkPosition(spaceShip, landingZone);
     }
 
-    private void moveShipBy(final double dx, final double dy) {
-        if (dx == 0 && dy == 0) {
-            return;
+    private void checkPosition(final SpaceShip ship, final LandingZone landingSite) {
+        final double landingZoneBaseline = landingSite.getBaseLine();
+        final double shipBottomLine = spaceShip.findBottomLine();
+        final boolean hasShipReachedLandingZone =  shipBottomLine >= landingZoneBaseline;
+        if (hasShipReachedLandingZone) {
+            final Bounds landingZoneBounds = landingSite.getBounds();
+            final double landingZoneMaxX = landingZoneBounds.getMaxX();
+            final double landingZoneMinX = landingZoneBounds.getMinX();
+
+            final Bounds shipBounds = spaceShip.getShipImage().getBoundsInParent();
+            final double vesselMaxX = shipBounds.getMaxX();
+            final double vesselMinX = shipBounds.getMinX();
+
+            final boolean isXPositionInRange = vesselMaxX <= landingZoneMaxX && vesselMinX >= landingZoneMinX;
+            final boolean isForceInRange = force <= GOAL_FORCE_MAX;
+            final boolean isLanded = isXPositionInRange && isForceInRange;
+            final boolean isCrashed = !isXPositionInRange || !isForceInRange;
+
+            if (isLanded) {
+                timer.stop();
+                // add score
+                showSuccessPopup();
+            }
+            if (isCrashed) {
+                timer.stop();
+                // add score
+                explosionImage = new ImageView(EXPLOSION);
+                explosionImage.setLayoutX(SPACE_SHIP_STARTING_X / 2.0);
+                explosionImage.setLayoutY(SPACE_SHIP_STARTING_Y);
+
+                removeSpaceShip();
+                actionPane.getChildren().remove(landingArea);
+                actionPane.getChildren().add(explosionImage);
+
+                showFailurePopup();
+            }
         }
-        final double centerX = spaceShipImage.getBoundsInLocal().getWidth() / 2;
-        final double centerY = spaceShipImage.getBoundsInLocal().getHeight() / 2;
-
-        double x = centerX + spaceShipImage.getLayoutX() + dx;
-        double y = centerY + spaceShipImage.getLayoutY() + dy;
-
-        moveShipTo(x, y);
     }
 
-    private void moveShipTo(final double x, final double y) {
-        final double vesselYPosition = spaceShipImage.getLayoutY();
-        final double vesselHeight = spaceShipImage.getBoundsInLocal().getHeight();
-        final double centerX = spaceShipImage.getBoundsInLocal().getWidth() / 2;
-        final double centerY = spaceShipImage.getBoundsInLocal().getHeight() / 2;
+    private void showSuccessPopup() {
+        displayActionPopup(SUCCESS_MSG, continuePlayingBtnLabel, this::nextLevel);
+    }
 
-        final double shipBoundsWidth = spaceShipImage.getBoundsInLocal().getWidth() - 50;
-        final double shipBoundsHeight = spaceShipImage.getBoundsInLocal().getHeight() - 23;
-        final double shipBoundsX = x - centerX - 25;
-        final double shipBoundsY = y - centerY - 25;
-        final Bounds shipBounds = new BoundingBox(shipBoundsX, shipBoundsY, shipBoundsWidth, shipBoundsHeight);
-
-        final boolean isXValid = x - centerX >= 0 && x + centerX <= WIDTH;
-        final boolean isYValid = y - centerY >= 0 && y + centerY <= HEIGHT;
-
-        if (isXValid && isYValid) {
-            spaceShipImage.relocate(x - centerX, y - centerY);
-        }
-
-        // When crash
-        if (shipBoundsY >= 550) {
-            explosionImage = new ImageView(EXPLOSION);
-            explosionImage.setLayoutX(SPACE_SHIP_STARTING_X/2.0);
-            explosionImage.setLayoutY(SPACE_SHIP_STARTING_Y);
-            actionPane.getChildren().remove(spaceShipImage);
-            actionPane.getChildren().remove(landingArea);
-            actionPane.getChildren().add(explosionImage);
-            timer.stop();
-            score = 0;
-            String textToSet = "SCORE : ";
-            pointsLabel.setText(textToSet + score);
-            displayActionPopup(CRASH_MSG);
-        }
-
-
-        // When landing successfully
-        if (landingArea.getBoundsInParent().intersects(shipBounds)) {
-            timer.stop();
-            score += 10;
-            String textToSet = "SCORE : ";
-            pointsLabel.setText(textToSet + score);
-            displayActionPopup(SUCCESS_MSG);
-        }
+    private void showFailurePopup() {
+        displayActionPopup(CRASH_MSG, retryBtnLabel, this::retry);
     }
 
     private void goToMenu() {
@@ -294,16 +268,26 @@ public class GameViewManager {
         menuStage.show();
     }
 
-    private void resetGame() {
-        actionPane.getChildren().remove(landingArea);
-        actionPane.getChildren().remove(spaceShipImage);
+    private void retry() {
+        ShipType type = spaceShip.getType();
         actionPane.getChildren().remove(explosionImage);
-        createNewGame(menuStage);
+        createNewGame(menuStage, type);
     }
 
-    private void displayActionPopup(final String message) {
+    private void nextLevel() {
+        ShipType type = spaceShip.getType();
+        if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
+            LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
+        }
+
+        landingZone.setScaleX(LANDING_ZONE_SCALE);
+        removeSpaceShip();
+        createNewGame(menuStage, type);
+    }
+
+    private void displayActionPopup(final String message, String label, Runnable action) {
         ActionPopup popup = new ActionPopup(message);
-        MenuButton playButton = createReplayButton(popup);
+        MenuButton playButton = createReplayButton(popup, label, action);
         MenuButton exitButton = createExitButton(popup);
         popup.buildPopUp(playButton, exitButton);
         popup.show(actionStage);
@@ -322,14 +306,14 @@ public class GameViewManager {
         return exitBtn;
     }
 
-    public MenuButton createReplayButton(Popup popup) {
-        MenuButton replayBtn = new MenuButton("Replay");
-        ButtonBar.setButtonData(replayBtn, ButtonBar.ButtonData.FINISH);
+    public MenuButton createReplayButton(Popup popup, String label, Runnable action) {
+        MenuButton replayBtn = new MenuButton(label);
+        ButtonBar.setButtonData(replayBtn, ButtonBar.ButtonData.OK_DONE);
         replayBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
                 popup.hide();
-                resetGame();
+                action.run();
             }
         });
         return replayBtn;
