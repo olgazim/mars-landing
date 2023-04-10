@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 /**
+ * Represents GameViewManager.
  * The GameViewManager class manages the game view and contains methods for creating the game scene,
  * setting up key listeners, and managing game elements such as the spaceship, landing zone, and score.
  * @author Olga Zimina, Shuyi Liu
@@ -51,9 +52,6 @@ public class GameViewManager {
     // The maximum thrust of the spaceship.
     private static final double MAX_THRUST = 2;
 
-    // The scale of the landing zone.
-    private double LANDING_ZONE_SCALE = 1;
-
     // The filename of the image of the star.
     private static final String STAR = "star.png";
 
@@ -61,22 +59,25 @@ public class GameViewManager {
     private static final String SPACE_BACKGROUND_IMAGE = "space.jpg";
 
     // The filename of the image of the explosion.
-    private final static String EXPLOSION = "crash.png";
+    private static final  String EXPLOSION = "crash.png";
 
     // The message shown when the player successfully completes a level.
-    private final static String SUCCESS_MSG = """
+    private static final  String SUCCESS_MSG = """
             Congratulations!\s
             You have completed the challenge.\s
             Would you like to continue playing?""";
 
-    // The message shown when the player crashes the spaceship.
-    private final static String CRASH_MSG = "Oops! Your ship crashed. \nWould you like to try again?";
+    // The  message shown when the player crashes the spaceship.
+    private static final String CRASH_MSG = "Oops! Your ship crashed. \nWould you like to try again?";
 
     // The label of the button used for continuing to the next level.
-    private final static String continuePlayingBtnLabel = "Next Level";
+    private static final String CONTINUE_PLAYING_BTN_LABEL = "Next Level";
 
     // The label of the button used for retrying the level.
-    private final static String retryBtnLabel = "Retry";
+    private static final String RETRY_BTN_LABEL = "Retry";
+
+    // The scale of the landing zone.
+    private double landingZoneScale = 1;
 
     // The current force of the spaceship.
     private double force = INITIAL_FORCE;
@@ -200,7 +201,7 @@ public class GameViewManager {
     // Creates the spaceship image.
     // @param type the ship type to create for future improvement
     private void createSpaceShip(final ShipType type) {
-        spaceShip = new SpaceShip(ShipType.FALCON9,
+        spaceShip = new SpaceShip(type,
                 WIDTH,
                 HEIGHT);
         spaceShipImage = spaceShip.getShipImage();
@@ -214,7 +215,7 @@ public class GameViewManager {
 
     // Creates the game elements.
     // @param type the ship type to create
-    private void createGameElements(ShipType type) {
+    private void createGameElements(final ShipType type) {
         score = 0;
         readScore();
         System.out.println("Current score is: " + score);
@@ -341,18 +342,18 @@ public class GameViewManager {
     // Shows a success popup with a message and continue playing button.
     // Calls the nextLevel method on continue playing button click.
     private void showSuccessPopup() {
-        displayActionPopup(SUCCESS_MSG, continuePlayingBtnLabel, this::nextLevel);
+        displayActionPopup(SUCCESS_MSG, CONTINUE_PLAYING_BTN_LABEL, this::nextLevel);
     }
 
     // Shows a failure popup with a message and retry button.
     // Calls the retry method on retry button click.
     private void showFailurePopup() {
-        displayActionPopup(CRASH_MSG, retryBtnLabel, this::retry);
+        displayActionPopup(CRASH_MSG, RETRY_BTN_LABEL, this::retry);
     }
 
     // Saves the score to a file with the name "score.txt".
     // @param score The score to be saved.
-    private void saveScoreToFile(int score) {
+    private void saveScoreToFile(final int score) {
         try {
             FileWriter writer = new FileWriter("score.txt");
             writer.write(Integer.toString(score));
@@ -372,19 +373,19 @@ public class GameViewManager {
     private void retry() {
         ShipType type = spaceShip.getType();
         actionPane.getChildren().remove(explosionImage);
-        createNewGame(menuStage, type);
+        createNewGame(menuStage, ShipType.FALCON9);
     }
 
     // Starts the next level of the game with a smaller landing zone.
     private void nextLevel() {
         ShipType type = spaceShip.getType();
         double LANDING_ZONE_SCALE_MIN = 0.2;
-        if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
+        if (landingZoneScale > LANDING_ZONE_SCALE_MIN) {
             double LANDING_ZONE_SCALE_STEP = 0.1;
-            LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
+            landingZoneScale -= LANDING_ZONE_SCALE_STEP;
         }
 
-        landingZone.setScaleX(LANDING_ZONE_SCALE);
+        landingZone.setScaleX(landingZoneScale);
         removeSpaceShip();
         actionPane.getChildren().remove(landingArea);
         createNewGame(menuStage, type);
@@ -394,7 +395,7 @@ public class GameViewManager {
     // @param message The message to be displayed.
     // @param label The label for the action button.
     // @param action The action to be performed on button click.
-    private void displayActionPopup(final String message, String label, Runnable action) {
+    private void displayActionPopup(final String message, final String label, final Runnable action) {
         ActionPopup popup = new ActionPopup(message);
         MenuButton playButton = createReplayButton(popup, label, action);
         MenuButton exitButton = createExitButton(popup);
@@ -452,33 +453,6 @@ public class GameViewManager {
         }
     }
 
-    /**
-     * Returns a string representation of the GameViewManager object.
-     *
-     * @return A string representation of the GameViewManager object.
-     */
-    @Override
-    public String toString() {
-        return "GameViewManager{" +
-                "LANDING_ZONE_SCALE=" + LANDING_ZONE_SCALE +
-                ", force=" + force +
-                ", thrustValue=" + thrustValue +
-                ", actionPane=" + actionPane +
-                ", actionScene=" + actionScene +
-                ", actionStage=" + actionStage +
-                ", menuStage=" + menuStage +
-                ", spaceShipImage=" + spaceShipImage +
-                ", spaceShip=" + spaceShip +
-                ", thrust=" + thrust +
-                ", leftKeyFlag=" + leftKeyFlag +
-                ", rightKeyFlag=" + rightKeyFlag +
-                ", score=" + score +
-                ", timer=" + timer +
-                ", explosionImage=" + explosionImage +
-                ", landingArea=" + landingArea +
-                ", landingZone=" + landingZone +
-                '}';
-    }
 
     /**
      * Compares this GameViewManager object to the given object.
@@ -488,11 +462,31 @@ public class GameViewManager {
      * false - otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         GameViewManager that = (GameViewManager) o;
-        return Double.compare(that.LANDING_ZONE_SCALE, LANDING_ZONE_SCALE) == 0 && Double.compare(that.force, force) == 0 && Double.compare(that.thrustValue, thrustValue) == 0 && thrust == that.thrust && leftKeyFlag == that.leftKeyFlag && rightKeyFlag == that.rightKeyFlag && score == that.score && Objects.equals(actionPane, that.actionPane) && Objects.equals(actionScene, that.actionScene) && Objects.equals(actionStage, that.actionStage) && Objects.equals(menuStage, that.menuStage) && Objects.equals(spaceShipImage, that.spaceShipImage) && Objects.equals(spaceShip, that.spaceShip) && Objects.equals(timer, that.timer) && Objects.equals(explosionImage, that.explosionImage) && Objects.equals(landingArea, that.landingArea) && Objects.equals(landingZone, that.landingZone);
+        return Double.compare(that.landingZoneScale, landingZoneScale) == 0
+                && Double.compare(that.force, force) == 0
+                && Double.compare(that.thrustValue, thrustValue) == 0
+                && thrust == that.thrust
+                && leftKeyFlag == that.leftKeyFlag
+                && rightKeyFlag == that.rightKeyFlag
+                && score == that.score
+                && Objects.equals(actionPane, that.actionPane)
+                && Objects.equals(actionScene, that.actionScene)
+                && Objects.equals(actionStage, that.actionStage)
+                && Objects.equals(menuStage, that.menuStage)
+                && Objects.equals(spaceShipImage, that.spaceShipImage)
+                && Objects.equals(spaceShip, that.spaceShip)
+                && Objects.equals(timer, that.timer)
+                && Objects.equals(explosionImage, that.explosionImage)
+                && Objects.equals(landingArea, that.landingArea)
+                && Objects.equals(landingZone, that.landingZone);
     }
 
     /**
@@ -501,7 +495,34 @@ public class GameViewManager {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(LANDING_ZONE_SCALE, force, thrustValue, actionPane, actionScene, actionStage, menuStage, spaceShipImage, spaceShip, thrust, leftKeyFlag, rightKeyFlag, score, timer, explosionImage, landingArea, landingZone);
+        return Objects.hash(landingZoneScale, force, thrustValue, actionPane, actionScene, actionStage, menuStage, spaceShipImage, spaceShip, thrust, leftKeyFlag, rightKeyFlag, score, timer, explosionImage, landingArea, landingZone);
+    }
+    /**
+     * Returns a string representation of the GameViewManager object.
+     *
+     * @return A string representation of the GameViewManager object.
+     */
+    @Override
+    public String toString() {
+        return "GameViewManager{"
+                + "LANDING_ZONE_SCALE=" + landingZoneScale
+                + ", force=" + force
+                + ", thrustValue=" + thrustValue
+                + ", actionPane=" + actionPane
+                + ", actionScene=" + actionScene
+                + ", actionStage=" + actionStage
+                + ", menuStage=" + menuStage
+                + ", spaceShipImage=" + spaceShipImage
+                + ", spaceShip=" + spaceShip
+                + ", thrust=" + thrust
+                + ", leftKeyFlag=" + leftKeyFlag
+                + ", rightKeyFlag=" + rightKeyFlag
+                + ", score=" + score
+                + ", timer=" + timer
+                + ", explosionImage=" + explosionImage
+                + ", landingArea=" + landingArea
+                + ", landingZone=" + landingZone
+                + '}';
     }
 }
 
