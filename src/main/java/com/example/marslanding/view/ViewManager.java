@@ -72,7 +72,7 @@ public class ViewManager {
     // int 648
     private static final int SIX_HUNDRED_FORTY_EIGHT = 648;
     // path to the font used in the game
-    private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
+    private static final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
     // an AnchorPane object
     private final AnchorPane anchorPane;
     // a Scene object
