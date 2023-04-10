@@ -75,6 +75,10 @@ public class GameViewManager {
 
     // The label of the button used for retrying the level.
     private static final String RETRY_BTN_LABEL = "Retry";
+    // The minimum scale value for the landing zone image
+    private static final double LANDING_ZONE_SCALE_MIN = 0.2;
+    // The scaling step for the landing zone image
+    private static final double LANDING_ZONE_SCALE_STEP = 0.1;
 
     // The scale of the landing zone.
     private double landingZoneScale = 1;
@@ -353,10 +357,10 @@ public class GameViewManager {
 
     // Saves the score to a file with the name "score.txt".
     // @param score The score to be saved.
-    private void saveScoreToFile(final int score) {
+    private void saveScoreToFile(final int currentScore) {
         try {
             FileWriter writer = new FileWriter("score.txt");
-            writer.write(Integer.toString(score));
+            writer.write(Integer.toString(currentScore));
             writer.close();
         } catch (IOException e) {
             System.out.println("Cannot write score in file!");
@@ -379,9 +383,7 @@ public class GameViewManager {
     // Starts the next level of the game with a smaller landing zone.
     private void nextLevel() {
         ShipType type = spaceShip.getType();
-        double LANDING_ZONE_SCALE_MIN = 0.2;
         if (landingZoneScale > LANDING_ZONE_SCALE_MIN) {
-            double LANDING_ZONE_SCALE_STEP = 0.1;
             landingZoneScale -= LANDING_ZONE_SCALE_STEP;
         }
 
@@ -408,7 +410,7 @@ public class GameViewManager {
      @param popup The popup to be closed on button click.
      @return The exit button.
      */
-    public MenuButton createExitButton(Popup popup) {
+    public MenuButton createExitButton(final Popup popup) {
         MenuButton exitBtn = new MenuButton("Exit");
         ButtonBar.setButtonData(exitBtn, ButtonBar.ButtonData.FINISH);
         exitBtn.setOnAction(event -> {
