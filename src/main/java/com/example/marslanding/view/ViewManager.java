@@ -23,6 +23,8 @@ import java.util.Scanner;
 /**
  This class represents the view manager for the Mars Lander game, which creates and manages
  the user interface components of the game.
+ * @author Olga Zimina, Shuyi Liu
+ * @version 1
  */
 public class ViewManager {
     // width of the game screen
@@ -41,6 +43,34 @@ public class ViewManager {
     private static final int LOGO_X_POSITION = 900;
     // logo's y coordinate
     private static final int LOGO_Y_POSITION = 230;
+    // int 10
+    private static final int TEN = 10;
+    // int 72
+    private static final int SEVENTEEN_TWO = 72;
+    // int 83
+    private static final int EIGHTY_THREE = 83;
+    // int 95
+    private static final int NINETY_FIVE = 95;
+    // int 6
+    private static final int SIX = 6;
+    // int 18
+    private static final int EIGHTEEN = 18;
+    // int 33
+    private static final int THIRTY_THREE = 33;
+    // int 72
+    private static final int SEVENTY_TWO = 72;
+    // int 25
+    private static final int TWENTY_FIVE = 25;
+    // int 630
+    private static final int SIX_HUNDRED_THIRTY = 630;
+    // int 330
+    private static final int THREE_HUNDRED_THIRTY = 330;
+    // int 100
+    private static final int ONE_HUNDRED = 100;
+    // int 1024
+    private static final int ONE_THOUSAND_TWENTY_FOUR = 1024;
+    // int 648
+    private static final int SIX_HUNDRED_FORTY_EIGHT = 648;
     // path to the font used in the game
     private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
     // an AnchorPane object
@@ -85,9 +115,11 @@ public class ViewManager {
         astronaut.setFitWidth(LOGO_WIDTH);
         astronaut.setLayoutX(LOGO_X_POSITION);
         astronaut.setLayoutY(LOGO_Y_POSITION);
-        astronaut.setEffect(new DropShadow(10, Color.rgb(72, 83, 95)));
-        astronaut.setOnMouseEntered(event -> astronaut.setEffect(new DropShadow(10, Color.rgb(6, 18, 33))));
-        astronaut.setOnMouseExited(event -> astronaut.setEffect(new DropShadow(10, Color.rgb(72, 83, 95))));
+        astronaut.setEffect(new DropShadow(TEN, Color.rgb(SEVENTEEN_TWO, EIGHTY_THREE, NINETY_FIVE)));
+        astronaut.setOnMouseEntered(event -> astronaut.setEffect(
+                new DropShadow(TEN, Color.rgb(SIX, EIGHTEEN, THIRTY_THREE))));
+        astronaut.setOnMouseExited(event -> astronaut.setEffect(
+                new DropShadow(TEN, Color.rgb(SEVENTY_TWO, EIGHTY_THREE, NINETY_FIVE))));
         anchorPane.getChildren().add(astronaut);
     }
 
@@ -120,9 +152,9 @@ public class ViewManager {
                     Scanner scanner = new Scanner(scoreFile);
                     int score = scanner.nextInt();
                     Text scoreLabel = new Text("Score: " + score);
-                    scoreLabel.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 25));
-                    scoreLabel.setLayoutX(630);
-                    scoreLabel.setLayoutY(330);
+                    scoreLabel.setFont(Font.loadFont(new FileInputStream(FONT_PATH), TWENTY_FIVE));
+                    scoreLabel.setLayoutX(SIX_HUNDRED_FORTY_EIGHT);
+                    scoreLabel.setLayoutY(THREE_HUNDRED_THIRTY);
                     anchorPane.getChildren().add(scoreLabel);
                 } catch (FileNotFoundException e) {
                     System.out.println("Cannot find score.txt!");
@@ -142,7 +174,7 @@ public class ViewManager {
     // @param button the button to add
     private void addMenuButtons(final MenuButton button) {
         button.setLayoutX(MENU_BUTTON_START_X);
-        button.setLayoutY(MENU_BUTTON_START_Y + menuButtonList.size() * 100);
+        button.setLayoutY(MENU_BUTTON_START_Y + menuButtonList.size() * ONE_HUNDRED);
         menuButtonList.add(button);
         anchorPane.getChildren().add(button);
 
@@ -152,9 +184,10 @@ public class ViewManager {
     // The image is read from a file named "galaxy_background.png".
     private void createBackground() {
         // get image file
-        Image background = new Image("galaxy_background.png", 1024, 648, false, true);
+        Image background = new Image(
+                "galaxy_background.png", ONE_THOUSAND_TWENTY_FOUR, SIX_HUNDRED_FORTY_EIGHT, false, true);
         // create background image
-        BackgroundImage backgroundImage = new BackgroundImage(background,BackgroundRepeat.NO_REPEAT,
+        BackgroundImage backgroundImage = new BackgroundImage(background, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT, null);
         anchorPane.setBackground(new Background(backgroundImage));
@@ -173,13 +206,31 @@ public class ViewManager {
      */
     @Override
     public String toString() {
-        return "ViewManager{" +
-                "FONT_PATH='" + FONT_PATH + '\'' +
-                ", anchorPane=" + anchorPane +
-                ", scene=" + scene +
-                ", stage=" + stage +
-                ", menuButtonList=" + menuButtonList +
-                ", scoreSubScene=" + scoreSubScene +
+        return "ViewManager{"
+                +
+                "FONT_PATH='" + FONT_PATH
+                + '\''
+                +
+                ", anchorPane="
+                +
+                anchorPane
+                +
+                ", scene="
+                +
+                scene
+                +
+                ", stage="
+                +
+                stage
+                +
+                ", menuButtonList="
+                +
+                menuButtonList
+                +
+                ", scoreSubScene="
+                +
+                scoreSubScene
+                +
                 '}';
     }
 
@@ -191,11 +242,17 @@ public class ViewManager {
      * false - otherwise
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ViewManager that = (ViewManager) o;
-        return Objects.equals(anchorPane, that.anchorPane) && Objects.equals(scene, that.scene) && Objects.equals(stage, that.stage) && Objects.equals(menuButtonList, that.menuButtonList) && Objects.equals(scoreSubScene, that.scoreSubScene);
+        return Objects.equals(anchorPane, that.anchorPane) && Objects.equals(scene, that.scene)
+                && Objects.equals(stage, that.stage) && Objects.equals(menuButtonList, that.menuButtonList)
+                && Objects.equals(scoreSubScene, that.scoreSubScene);
     }
 
     /**

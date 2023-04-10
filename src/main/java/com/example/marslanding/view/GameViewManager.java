@@ -20,6 +20,8 @@ import java.util.Scanner;
 /**
  * The GameViewManager class manages the game view and contains methods for creating the game scene,
  * setting up key listeners, and managing game elements such as the spaceship, landing zone, and score.
+ * @author Olga Zimina, Shuyi Liu
+ * @version 1
  */
 public class GameViewManager {
     // The width of the game view.
