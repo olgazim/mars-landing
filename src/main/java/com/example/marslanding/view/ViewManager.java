@@ -1,11 +1,11 @@
 package com.example.marslanding.view;
 
+import com.example.marslanding.model.ShipType;
 import com.example.marslanding.model.MarsLanderSubScene;
 import com.example.marslanding.model.MenuButton;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,8 +14,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +79,7 @@ public class ViewManager {
             @Override
             public void handle(final ActionEvent event) {
                 GameViewManager gameManager = new GameViewManager();
-                gameManager.createNewGame(stage);
+                gameManager.createNewGame(stage, ShipType.FALCON9);
             }
         });
     }
