@@ -200,12 +200,12 @@ public class GameViewManager {
     /**
      * Creates a new game with the specified menu stage and ship type.
      *
-     * @param menuStage the menu stage to hide
+     * @param stage the menu stage to hide
      * @param type the ship type to create
      */
-    public void createNewGame(final Stage menuStage, final ShipType type) {
+    public void createNewGame(final Stage stage, final ShipType type) {
         force = INITIAL_FORCE;
-        this.menuStage = menuStage;
+        this.menuStage = stage;
         this.menuStage.hide();
         createSpaceBackground();
         createGameElements(type);
