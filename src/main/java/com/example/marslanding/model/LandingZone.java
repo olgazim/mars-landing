@@ -4,6 +4,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 
 public class LandingZone {
+    private static final String image = "landing_area.png";
     private final ImageView imageView;
     private final double maxXLimit;
     private final double minXLimit;
@@ -11,13 +12,12 @@ public class LandingZone {
     private final double minYLimit;
     private static final double LANDING_LINE_COEFFICIENT = 0.6;
     public LandingZone(
-            final String imagePath,
             final double maxXLimit,
             final double minXLimit,
             final double maxYLimit,
             final double minYLimit
     ) {
-        this.imageView = new ImageView(imagePath);
+        this.imageView = new ImageView(image);
         this.maxXLimit = maxXLimit;
         this.minXLimit = minXLimit;
         this.maxYLimit = maxYLimit;
@@ -33,8 +33,8 @@ public class LandingZone {
     }
 
     private void setPosition(final double xCoordinate, final double yCoordinate) {
-        imageView.setX(x);
-        imageView.setY(y);
+        imageView.setX(xCoordinate);
+        imageView.setY(yCoordinate);
     }
 
     public ImageView getImageView() {
