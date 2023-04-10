@@ -137,16 +137,19 @@ public class GameViewManager {
     }
     private void createGameElements(ShipType type) {
         score = 0;
-        star = new ImageView(STAR);
-        star.setFitHeight(40);
-        star.setFitWidth(40);
-        star.setLayoutX(800);
-        star.setLayoutY(20);
-        actionPane.getChildren().add(star);
-        pointsLabel = new SmallInfoLabel("SCORE : " + score);
-        pointsLabel.setLayoutX(850);
-        pointsLabel.setLayoutY(20);
-        actionPane.getChildren().add(pointsLabel);
+        if (star == null) {
+            star = new ImageView(STAR);
+            star.setFitHeight(40);
+            star.setFitWidth(40);
+            star.setLayoutX(800);
+            star.setLayoutY(20);
+            actionPane.getChildren().add(star);
+            pointsLabel = new SmallInfoLabel("SCORE : " + score);
+            pointsLabel.setLayoutX(850);
+            pointsLabel.setLayoutY(20);
+            actionPane.getChildren().add(pointsLabel);
+        }
+
         if (landingArea == null) {
             landingZone = new LandingZone(
                     WIDTH,
@@ -301,6 +304,7 @@ public class GameViewManager {
 
         landingZone.setScaleX(LANDING_ZONE_SCALE);
         removeSpaceShip();
+        actionPane.getChildren().remove(landingArea);
         createNewGame(menuStage, type);
     }
 
