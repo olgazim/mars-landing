@@ -60,7 +60,6 @@ public class LandingZone {
         final Bounds bounds = getBounds();
         final double height = bounds.getHeight();
         final double y = imageView.getLayoutY();
-
         return maxYLimit + height * LANDING_LINE_COEFFICIENT;
     }
 }

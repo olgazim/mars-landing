@@ -172,7 +172,7 @@ public class GameViewManager {
             LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
         }
 
-        if (score == 0){
+        if (score == 0) {
             LANDING_ZONE_SCALE = 1;
         }
 
