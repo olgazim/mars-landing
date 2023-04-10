@@ -3,13 +3,10 @@ package com.example.marslanding.view;
 import com.example.marslanding.model.ShipType;
 import com.example.marslanding.model.MarsLanderSubScene;
 import com.example.marslanding.model.MenuButton;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -47,13 +44,13 @@ public class ViewManager {
     // path to the font used in the game
     private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
     // an AnchorPane object
-    private AnchorPane anchorPane;
+    private final AnchorPane anchorPane;
     // a Scene object
-    private Scene scene;
+    private final Scene scene;
     // a Stage object
-    private Stage stage;
+    private final Stage stage;
     // a list of MenuButton objects
-    private List<MenuButton> menuButtonList;
+    private final List<MenuButton> menuButtonList;
     // a MarsLanderSubScene object scoreSubScene
     private MarsLanderSubScene scoreSubScene;
 
@@ -89,18 +86,8 @@ public class ViewManager {
         astronaut.setLayoutX(LOGO_X_POSITION);
         astronaut.setLayoutY(LOGO_Y_POSITION);
         astronaut.setEffect(new DropShadow(10, Color.rgb(72, 83, 95)));
-        astronaut.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-                astronaut.setEffect(new DropShadow(10, Color.rgb(6, 18, 33)));
-            }
-        });
-        astronaut.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-                 astronaut.setEffect(new DropShadow(10, Color.rgb(72, 83, 95)));
-            }
-        });
+        astronaut.setOnMouseEntered(event -> astronaut.setEffect(new DropShadow(10, Color.rgb(6, 18, 33))));
+        astronaut.setOnMouseExited(event -> astronaut.setEffect(new DropShadow(10, Color.rgb(72, 83, 95))));
         anchorPane.getChildren().add(astronaut);
     }
 
@@ -109,47 +96,36 @@ public class ViewManager {
         MenuButton playBtn = new MenuButton("Play");
         addMenuButtons(playBtn);
 
-        playBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent event) {
-                GameViewManager gameManager = new GameViewManager();
-                gameManager.createNewGame(stage, ShipType.FALCON9);
-            }
+        playBtn.setOnAction(event -> {
+            GameViewManager gameManager = new GameViewManager();
+            gameManager.createNewGame(stage, ShipType.FALCON9);
         });
     }
     // Creates the "Exit" button for the game, which exits the application when clicked.
     private void createExitButton() {
         MenuButton exitBtn = new MenuButton("Exit");
         addMenuButtons(exitBtn);
-        exitBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent event) {
-                stage.close();
-            }
-        });
+        exitBtn.setOnAction(event -> stage.close());
     }
     // Creates the "Score" button for the game, which shows the player's score when clicked.
     // The score is read from a file named "score.txt" and displayed on the screen.
     private void createScoreButton() {
         MenuButton scoreBtn = new MenuButton("Score");
         addMenuButtons(scoreBtn);
-        scoreBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent event) {
-                scoreSubScene.moveSubScene();
-                File scoreFile = new File("score.txt");
-                if (scoreFile.exists()) {
-                    try {
-                        Scanner scanner = new Scanner(scoreFile);
-                        int score = scanner.nextInt();
-                        Text scoreLabel = new Text("Score: " + score);
-                        scoreLabel.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 25));
-                        scoreLabel.setLayoutX(630);
-                        scoreLabel.setLayoutY(330);
-                        anchorPane.getChildren().add(scoreLabel);
-                    } catch (FileNotFoundException e) {
-                        System.out.println("Cannot find score.txt!");
-                    }
+        scoreBtn.setOnAction(event -> {
+            scoreSubScene.moveSubScene();
+            File scoreFile = new File("score.txt");
+            if (scoreFile.exists()) {
+                try {
+                    Scanner scanner = new Scanner(scoreFile);
+                    int score = scanner.nextInt();
+                    Text scoreLabel = new Text("Score: " + score);
+                    scoreLabel.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 25));
+                    scoreLabel.setLayoutX(630);
+                    scoreLabel.setLayoutY(330);
+                    anchorPane.getChildren().add(scoreLabel);
+                } catch (FileNotFoundException e) {
+                    System.out.println("Cannot find score.txt!");
                 }
             }
         });
@@ -219,7 +195,7 @@ public class ViewManager {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ViewManager that = (ViewManager) o;
-        return Objects.equals(FONT_PATH, that.FONT_PATH) && Objects.equals(anchorPane, that.anchorPane) && Objects.equals(scene, that.scene) && Objects.equals(stage, that.stage) && Objects.equals(menuButtonList, that.menuButtonList) && Objects.equals(scoreSubScene, that.scoreSubScene);
+        return Objects.equals(anchorPane, that.anchorPane) && Objects.equals(scene, that.scene) && Objects.equals(stage, that.stage) && Objects.equals(menuButtonList, that.menuButtonList) && Objects.equals(scoreSubScene, that.scoreSubScene);
     }
 
     /**
