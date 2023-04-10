@@ -16,6 +16,10 @@ import javafx.scene.layout.*;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
+import java.io.*;
+import java.util.List;
+import java.util.Scanner;
+
 public class GameViewManager {
     private final String FONT_PATH = "src/main/java/com/example/marslanding/model/resources/kenvector_future.ttf";
     private static final int WIDTH = 1024;
@@ -139,7 +143,7 @@ public class GameViewManager {
         star.setLayoutX(800);
         star.setLayoutY(20);
         actionPane.getChildren().add(star);
-        pointsLabel = new SmallInfoLabel("SCORE : 0");
+        pointsLabel = new SmallInfoLabel("SCORE : " + score);
         pointsLabel.setLayoutX(850);
         pointsLabel.setLayoutY(20);
         actionPane.getChildren().add(pointsLabel);
@@ -162,6 +166,10 @@ public class GameViewManager {
     private void setLandingAreaPosition(final ImageView image) {
         if (LANDING_ZONE_SCALE > LANDING_ZONE_SCALE_MIN) {
             LANDING_ZONE_SCALE -= LANDING_ZONE_SCALE_STEP;
+        }
+
+        if (score == 0){
+            LANDING_ZONE_SCALE = 1;
         }
 
         image.setScaleX(LANDING_ZONE_SCALE);
@@ -263,6 +271,17 @@ public class GameViewManager {
         displayActionPopup(CRASH_MSG, retryBtnLabel, this::retry);
     }
 
+    private void saveScoreToFile(int score) {
+        try {
+            FileWriter writer = new FileWriter("score.txt");
+            writer.write(Integer.toString(score));
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Cannot write score in file!");
+        }
+    }
+
+
     private void goToMenu() {
         actionStage.close();
         menuStage.show();
@@ -319,5 +338,19 @@ public class GameViewManager {
         return replayBtn;
     }
 
+    private void readScore() {
+        File scoreFile = new File("score.txt");
+        if (scoreFile.exists()) {
+            try {
+                Scanner scanner = new Scanner(scoreFile);
+                score = scanner.nextInt();
+                scanner.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            score = 0;
+        }
+    }
 }
 
