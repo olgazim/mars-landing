@@ -236,6 +236,16 @@ public class ViewManager {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(FONT_PATH, anchorPane, scene, stage, menuButtonList, scoreSubScene);
+        final int prime = 17;
+        final int additionValue = 37;
+        int result = prime;
+        result = additionValue * result + anchorPane.hashCode();
+        result = additionValue * result + scene.hashCode();
+        result = additionValue * result + stage.hashCode();
+        for (MenuButton button : menuButtonList) {
+            result = additionValue * result + button.hashCode();
+        }
+        result = additionValue * result +scoreSubScene.hashCode();
+        return result;
     }
 }

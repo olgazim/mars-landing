@@ -61,8 +61,8 @@ public class GameViewManager {
     private static final int EIGHT_HUNDRED_FIFTY = 850;
     // int 540
     private static final int FIVE_HUNDRED_FORTY = 540;
-    // int 10
-    private static final int TEN = 10;
+    // Score delta
+    private static final int SCORE_DELTA = 10;
 
     // The filename of the image of the star.
     private static final String STAR = "star.png";
@@ -325,11 +325,9 @@ public class GameViewManager {
             final Bounds landingZoneBounds = landingSite.getBounds();
             final double landingZoneMaxX = landingZoneBounds.getMaxX();
             final double landingZoneMinX = landingZoneBounds.getMinX();
-
             final Bounds shipBounds = spaceShip.getShipImage().getBoundsInParent();
             final double vesselMaxX = shipBounds.getMaxX();
             final double vesselMinX = shipBounds.getMinX();
-
             final boolean isXPositionInRange = vesselMaxX <= landingZoneMaxX && vesselMinX >= landingZoneMinX;
             final boolean isForceInRange = force <= GOAL_FORCE_MAX;
             final boolean isLanded = isXPositionInRange && isForceInRange;
@@ -337,7 +335,7 @@ public class GameViewManager {
 
             if (isLanded) {
                 timer.stop();
-                score += TEN;
+                score += SCORE_DELTA;
                 saveScoreToFile(score);
                 showSuccessPopup();
             }
@@ -345,17 +343,21 @@ public class GameViewManager {
                 timer.stop();
                 score = 0;
                 saveScoreToFile(score);
-                explosionImage = new ImageView(EXPLOSION);
-                explosionImage.setLayoutX(SPACE_SHIP_STARTING_X / 2.0);
-                explosionImage.setLayoutY(SPACE_SHIP_STARTING_Y);
-
                 removeSpaceShip();
                 actionPane.getChildren().remove(landingArea);
-                actionPane.getChildren().add(explosionImage);
-
+                addCrashImage();
                 showFailurePopup();
             }
         }
+    }
+    /*
+    Adds animage of an explosion to the action pane at the position where the spaceship crashed.
+     */
+    private void addCrashImage() {
+        explosionImage = new ImageView(EXPLOSION);
+        explosionImage.setLayoutX(SPACE_SHIP_STARTING_X / 2.0);
+        explosionImage.setLayoutY(SPACE_SHIP_STARTING_Y);
+        actionPane.getChildren().add(explosionImage);
     }
 
     // Shows a success popup with a message and continue playing button.
@@ -392,7 +394,7 @@ public class GameViewManager {
     private void retry() {
         ShipType type = spaceShip.getType();
         actionPane.getChildren().remove(explosionImage);
-        createNewGame(menuStage, ShipType.FALCON9);
+        createNewGame(menuStage, type);
     }
 
     // Starts the next level of the game with a smaller landing zone.
@@ -512,10 +514,47 @@ public class GameViewManager {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(landingZoneScale, force, thrustValue, actionPane, actionScene, actionStage,
-                menuStage, spaceShipImage, spaceShip, thrust, leftKeyFlag, rightKeyFlag, score, timer,
-                explosionImage, landingArea, landingZone);
+        final int prime = 17;
+        final int additionValue = 37;
+        final int shift = 32;
+        int result = prime;
+        long temp = Double.doubleToLongBits(landingZoneScale);
+        result = additionValue * result + (int) (temp ^ (temp >>> shift));
+        temp = Double.doubleToLongBits(force);
+        result = additionValue * result +(int) (temp ^ (temp >>> shift));
+        temp = Double.doubleToLongBits(thrustValue);
+        result = additionValue * result + (int) (temp ^ (temp >>> shift));
+        result = additionValue * result + (actionPane != null ? actionPane.hashCode() : 0);
+        result = additionValue * result + (actionScene != null ? actionScene.hashCode() : 0);
+        result = additionValue * result + (actionStage != null ? actionStage.hashCode() : 0);
+        result = additionValue * result + (menuStage != null ? menuStage.hashCode() : 0);
+        result = additionValue * result +  (spaceShipImage != null ? spaceShipImage.hashCode() : 0);
+        result = additionValue * result + (spaceShip != null ? spaceShip.hashCode() : 0);
+        if (thrust) {
+            result = additionValue * result + 1;
+        }
+        if (leftKeyFlag) {
+            result = additionValue * result + 1;
+        }
+        if (rightKeyFlag) {
+            result = additionValue * result + 1;
+        }
+        result = additionValue * result + score;
+        if (timer != null) {
+            result = additionValue * result + timer.hashCode();
+        }
+        if (explosionImage != null) {
+            result = additionValue * result + explosionImage.hashCode();
+        }
+        if (landingArea != null) {
+            result = additionValue * result + landingArea.hashCode();
+        }
+        if (landingZone != null) {
+            result = additionValue * result + landingZone.hashCode();
+        }
+        return result;
     }
+
     /**
      * Returns a string representation of the GameViewManager object.
      *
